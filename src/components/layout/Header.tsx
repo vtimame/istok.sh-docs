@@ -80,6 +80,20 @@ export default function Header({ docs }: HeaderProps) {
           >
             Docs
           </a>
+
+          <a
+            href="https://github.com/vtimame/istok.sh"
+            target={"_blank"}
+            className={cn(
+              buttonVariants({
+                variant: "ghost",
+                size: "sm",
+              }),
+              docs && "hidden lg:inline-flex",
+            )}
+          >
+            Github
+          </a>
         </nav>
       </div>
     </header>

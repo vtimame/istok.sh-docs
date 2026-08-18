@@ -1,6 +1,9 @@
 ---
 import Header from "@/components/layout/Header.tsx";
+import { Footer } from "@/components/layout/Footer.tsx";
+
 import EmptyLayout from "@/layouts/EmptyLayout.astro";
+
 import { Hero } from "@/components/landing/Hero.tsx";
 import { ProjectState } from "@/components/landing/ProjectState.tsx";
 import { AgentWorkflow } from "@/components/landing/AgentWorkflow.tsx";
@@ -14,6 +17,7 @@ import { AgentHandoffSection } from "@/components/landing/AgentHandoffSection.ts
 
 <EmptyLayout>
   <Header client:load />
+
   <Hero client:load />
   <ProjectState client:load />
   <AgentWorkflow client:load />
@@ -22,5 +26,7 @@ import { AgentHandoffSection } from "@/components/landing/AgentHandoffSection.ts
   <AgentHandoffSection client:load />
   <RunEvidenceSection client:load />
   <LocalFirstSection client:load />
-  <FinalCTASection client:load />
+  <FinalCTASection />
+
+  <Footer />
 </EmptyLayout>
