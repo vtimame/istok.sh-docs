@@ -1,0 +1,130 @@
+---
+import EmptyLayout from "./EmptyLayout.astro";
+import Header from "@/components/layout/Header";
+
+import { DocsSidebar } from "@/components/docs/DocsSidebar";
+import { DocsToc } from "@/components/docs/DocsToc";
+
+import {
+  getCollection,
+  type CollectionEntry,
+} from "astro:content";
+
+import { createDocsNavigation } from "@/lib/docs/navigation";
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  lang: string;
+  entry: CollectionEntry<"docs">;
+  headings: Heading[];
+}
+
+const {
+  lang,
+  entry,
+  headings,
+} = Astro.props;
+
+const pathname = Astro.url.pathname;
+
+const entries = await getCollection("docs");
+
+const navigation = createDocsNavigation(
+  entries,
+  lang,
+);
+---
+
+<EmptyLayout lang={lang}>
+  <Header
+    client:load
+    docs={{
+      pathname,
+      groups: navigation,
+    }}
+  />
+
+  <div class="pt-14">
+    <div
+      class="
+        app-container
+        grid
+        min-h-[calc(100vh-3.5rem)]
+        lg:grid-cols-[240px_minmax(0,1fr)]
+        xl:grid-cols-[240px_minmax(0,1fr)_220px]
+      "
+    >
+      <DocsSidebar
+        groups={navigation}
+        pathname={pathname}
+      />
+
+      <main
+        class="min-w-0"
+        data-pagefind-body
+      >
+        <div class="mx-auto max-w-3xl px-6 py-12 lg:px-10 lg:py-16">
+          <header class="mb-10">
+            <h1 class="text-3xl font-semibold tracking-tight lg:text-4xl">
+              {entry.data.title}
+            </h1>
+
+            {
+              entry.data.description && (
+                <p class="mt-3 text-base leading-7 text-muted-foreground">
+                  {entry.data.description}
+                </p>
+              )
+            }
+          </header>
+
+          <article
+            class="
+              docs-content
+              prose
+              prose-neutral
+              max-w-none
+              dark:prose-invert
+
+              prose-headings:scroll-mt-24
+              prose-headings:font-semibold
+              prose-headings:tracking-tight
+
+              prose-h2:mt-12
+              prose-h2:border-b
+              prose-h2:border-border/60
+              prose-h2:pb-3
+
+              prose-h3:mt-8
+
+              prose-p:leading-7
+
+              prose-a:font-medium
+              prose-a:text-foreground
+              prose-a:underline
+              prose-a:decoration-border
+              prose-a:underline-offset-4
+
+              prose-table:text-sm
+              prose-th:text-foreground
+              prose-td:text-muted-foreground
+              prose-strong:text-foreground
+            "
+          >
+            <slot />
+          </article>
+        </div>
+      </main>
+
+      <DocsToc
+        client:load
+        headings={headings}
+      />
+    </div>
+  </div>
+</EmptyLayout>

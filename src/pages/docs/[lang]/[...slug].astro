@@ -1,0 +1,47 @@
+---
+import {
+  getCollection,
+  render,
+} from "astro:content";
+
+import type { GetStaticPaths } from "astro";
+
+import DocsLayout from "@/layouts/DocsLayout.astro";
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection("docs");
+
+  return entries.map((entry) => {
+    const [lang, ...parts] = entry.id.split("/");
+
+    return {
+      params: {
+        lang,
+        slug: parts.join("/"),
+      },
+      props: {
+        entry,
+        lang,
+      },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const {
+  entry,
+  lang,
+} = Astro.props;
+
+const {
+  Content,
+  headings,
+} = await render(entry);
+---
+
+<DocsLayout
+  lang={lang}
+  entry={entry}
+  headings={headings}
+>
+  <Content />
+</DocsLayout>

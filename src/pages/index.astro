@@ -1,0 +1,26 @@
+---
+import Header from "@/components/layout/Header.tsx";
+import EmptyLayout from "@/layouts/EmptyLayout.astro";
+import { Hero } from "@/components/landing/Hero.tsx";
+import { ProjectState } from "@/components/landing/ProjectState.tsx";
+import { AgentWorkflow } from "@/components/landing/AgentWorkflow.tsx";
+import { InspectableSection } from "@/components/landing/InspectableSection.tsx";
+import { ContextRetrievalSection } from "@/components/landing/ContextRetrievalSection.tsx";
+import { RunEvidenceSection } from "@/components/landing/RunEvidenceSection.tsx";
+import { LocalFirstSection } from "@/components/landing/LocalFirstSection.tsx";
+import { FinalCTASection } from "@/components/landing/QuickStartSection.tsx";
+import { AgentHandoffSection } from "@/components/landing/AgentHandoffSection.tsx";
+---
+
+<EmptyLayout>
+  <Header client:load />
+  <Hero client:load />
+  <ProjectState client:load />
+  <AgentWorkflow client:load />
+  <InspectableSection client:load />
+  <ContextRetrievalSection client:load />
+  <AgentHandoffSection client:load />
+  <RunEvidenceSection client:load />
+  <LocalFirstSection client:load />
+  <FinalCTASection client:load />
+</EmptyLayout>
