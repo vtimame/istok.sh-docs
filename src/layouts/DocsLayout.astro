@@ -40,7 +40,10 @@ const navigation = createDocsNavigation(
 );
 ---
 
-<EmptyLayout lang={lang}>
+<EmptyLayout
+  lang={lang} title={`${entry.data.title} — Istok`}
+  description={entry.data.description}
+>
   <Header
     client:load
     docs={{
