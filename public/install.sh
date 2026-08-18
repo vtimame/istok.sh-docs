@@ -185,6 +185,7 @@ require_command uname
 require_command curl
 require_command tar
 require_command awk
+require_command install
 
 OS="$(detect_os)"
 ARCH="$(detect_arch)"
@@ -198,7 +199,7 @@ else
 fi
 
 ARCHIVE_URL="${RELEASE_URL}/${ASSET}"
-CHECKSUMS_URL="${RELEASE_URL}/checksums.txt"
+CHECKSUMS_URL="${RELEASE_URL}/SHA256SUMS"
 
 if [ "$DRY_RUN" -eq 1 ]; then
   TMP_DIR="${TMPDIR:-/tmp}/istok-install.<tmp>"
@@ -207,7 +208,7 @@ else
 fi
 
 ARCHIVE_PATH="${TMP_DIR}/${ASSET}"
-CHECKSUMS_PATH="${TMP_DIR}/checksums.txt"
+CHECKSUMS_PATH="${TMP_DIR}/SHA256SUMS"
 BINARY_PATH="${TMP_DIR}/istok"
 TARGET_PATH="${INSTALL_DIR}/istok"
 
@@ -260,7 +261,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
 
   info ""
   debug "4. Verify SHA-256 checksum"
-  info "  [dry-run] find '${ASSET}' in checksums.txt"
+  info "  [dry-run] find '${ASSET}' in SHA256SUMS"
   info "  [dry-run] calculate SHA-256 for '${ARCHIVE_PATH}'"
   info "  [dry-run] compare expected and actual checksums"
 
