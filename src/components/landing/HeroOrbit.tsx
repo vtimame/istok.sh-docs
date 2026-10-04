@@ -42,7 +42,8 @@ const agents: Agent[] = [
     orbit: 0.44,
     phase: Math.PI,
     speed: 0.15,
-    color: "#111111",
+    // Codex's mark is monochrome, so it follows the theme's text color.
+    color: "var(--foreground)",
   },
   {
     id: "gemini",
@@ -566,7 +567,7 @@ export function HeroOrbit(props: Props) {
               trailRefs.current[agent.id] = element;
             }}
             fill="none"
-            stroke={agent.color}
+            style={{ stroke: agent.color }}
             strokeWidth="1.2"
             strokeLinecap="round"
             opacity="0"
