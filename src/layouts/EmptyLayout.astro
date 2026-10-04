@@ -10,10 +10,9 @@ interface Props {
   description?: string;
   image?: string;
   alternates?: Partial<Record<string, string>>;
-  noindex?: boolean;
 }
 
-const { lang = "en", image = "/og.png", alternates = {}, noindex = false } = Astro.props;
+const { lang = "en", image = "/og.png", alternates = {} } = Astro.props;
 
 const strings = ui[isLocale(lang) ? lang : "en"];
 const title = Astro.props.title ?? strings.meta.title;
@@ -66,8 +65,6 @@ const imageUrl = new URL(image, site);
       ) : null,
     )
   }
-
-  {noindex && <meta name="robots" content="noindex" />}
 
   <title>{title}</title>
 
