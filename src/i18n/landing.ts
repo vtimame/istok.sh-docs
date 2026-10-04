@@ -95,7 +95,7 @@ export const landing: Record<Locale, LandingStrings> = {
       body: "Ask your agent to remember a rule, a decision or a gotcha. Istok keeps it with the project and hands it to every agent that picks up a task there, whether it is Claude or Codex.",
     },
     history: {
-      title: ["See exactly", "what happened."],
+      title: ["Come back to a task’s", "history at any time."],
       body: "Every task keeps its history: who claimed it, what failed, who took over and how it ended. Each step links to the run behind it.",
       alt: "Task page: Codex's run failed and handed over, Claude's run succeeded and completed the task",
     },
@@ -201,7 +201,7 @@ export const landing: Record<Locale, LandingStrings> = {
       body: "Попросите агента запомнить правило, решение или подводный камень. Istok сохранит это в проекте и передаст каждому агенту, который возьмёт здесь задачу, будь то Claude или Codex.",
     },
     history: {
-      title: ["Видно всё,", "что произошло."],
+      title: ["Возвращайтесь к истории", "задачи в любое время."],
       body: "У каждой задачи есть история: кто её взял, что не получилось, кто продолжил и чем всё закончилось. Каждый шаг ведёт к своему запуску.",
       alt: "Страница задачи: запуск Codex завершился неудачей и передал задачу, запуск Claude прошёл успешно и завершил её",
     },
