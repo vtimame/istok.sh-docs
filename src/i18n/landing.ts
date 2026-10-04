@@ -69,7 +69,7 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     showcase: {
       title: ["See what your agents", "are working on."],
-      body: "One interface for all your projects and tasks, in the browser and in the terminal. Everything your agents do shows up as it happens, and none of it leaves your machine.",
+      body: "One interface for all your projects and tasks, in the browser and in the terminal. You see everything your agents do.",
       tabs: {
         projects: "Projects",
         runs: "Runs",
@@ -185,7 +185,7 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     showcase: {
       title: ["Следите за работой", "ваших агентов."],
-      body: "Один интерфейс для всех проектов и задач — в браузере и в терминале. Всё, что делают агенты, видно сразу, и ничего не покидает ваш компьютер.",
+      body: "Один интерфейс для всех проектов и задач — в браузере и в терминале. Вы видите всё, что делают агенты.",
       tabs: {
         projects: "Проекты",
         runs: "Запуски",
