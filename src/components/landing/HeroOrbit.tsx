@@ -95,7 +95,8 @@ const agents: Agent[] = [
   },
 ];
 
-const eventLabels = ["context", "task", "handoff", "progress"];
+// Events carry the real Istok calls an agent makes, as in the sessions below.
+const eventLabels = ["task_create", "task_claim", "task_progress", "context_add", "run_validate ✓", "task_complete"];
 
 const CENTER_DELAY = 0;
 const CENTER_DURATION = 650;
@@ -186,6 +187,9 @@ export function HeroOrbit(props: Props) {
 
   const labelSizesRef = useRef<Record<string, { width: number; height: number }>>({});
 
+  // The agent under the pointer; the others dim while it is set.
+  const hoveredRef = useRef<string | null>(null);
+
   useEffect(() => {
     const container = containerRef.current;
 
@@ -250,6 +254,10 @@ export function HeroOrbit(props: Props) {
       if (eventLabelRef.current) {
         eventLabelRef.current.textContent = label;
       }
+
+      // The packet and its path take the color of the agent that sends them.
+      eventPacketRef.current?.style.setProperty("fill", agent.color);
+      eventLineRef.current?.style.setProperty("stroke", agent.color);
     };
 
     const hideEvent = () => {
@@ -348,8 +356,11 @@ export function HeroOrbit(props: Props) {
 
         positions[agent.id] = { x, y };
 
-        const dotOpacity = clamp(radiusT * 1.6);
-        const dotScale = 0.45 + radiusReveal * 0.55;
+        const hovered = hoveredRef.current;
+        const focus = hovered === null || hovered === agent.id ? 1 : 0.3;
+
+        const dotOpacity = clamp(radiusT * 1.6) * focus;
+        const dotScale = (0.45 + radiusReveal * 0.55) * (hovered === agent.id ? 1.5 : 1);
 
         dot.style.opacity = String(dotOpacity);
 
@@ -391,7 +402,8 @@ export function HeroOrbit(props: Props) {
         const labelReveal = easeOutCubic(labelT);
         const labelScale = 0.94 + labelReveal * 0.06;
 
-        label.style.opacity = String(labelReveal);
+        label.style.opacity = String(labelReveal * focus);
+        label.style.color = hovered === agent.id ? "var(--foreground)" : "";
 
         label.style.transform = `
           translate3d(${labelX}px, ${labelY}px, 0)
@@ -399,6 +411,15 @@ export function HeroOrbit(props: Props) {
           scale(${labelScale})
         `;
       }
+
+      // The hovered agent's orbit lights up in its color.
+      const hoveredAgent = agents.find((agent) => agent.id === hoveredRef.current);
+      ringRefs.current.forEach((ring, index) => {
+        if (!ring) return;
+
+        const lit = hoveredAgent && rings[index] === hoveredAgent.orbit;
+        ring.style.borderColor = lit ? `color-mix(in oklab, ${hoveredAgent.color} 55%, transparent)` : "";
+      });
 
       if (!activeEvent && waveStartedAt === null && now >= nextEventAt) {
         startEvent(now);
@@ -421,7 +442,7 @@ export function HeroOrbit(props: Props) {
           eventLine.setAttribute("x2", String(position.x));
           eventLine.setAttribute("y2", String(position.y));
 
-          eventLine.style.opacity = String(fade * 0.16);
+          eventLine.style.opacity = String(fade * 0.35);
 
           const packetT = smoothstep(eventT);
 
@@ -431,12 +452,12 @@ export function HeroOrbit(props: Props) {
           eventPacket.setAttribute("cx", String(packetX));
           eventPacket.setAttribute("cy", String(packetY));
 
-          eventPacket.style.opacity = String(fade * 0.8);
+          eventPacket.style.opacity = String(Math.min(1, fade * 1.6));
 
           const eventLabelX = centerX + (position.x - centerX) * 0.62;
           const eventLabelY = centerY + (position.y - centerY) * 0.62;
 
-          eventLabel.style.opacity = String(fade * 0.55);
+          eventLabel.style.opacity = String(fade * 0.9);
 
           eventLabel.style.transform = `
             translate3d(${eventLabelX}px, ${eventLabelY}px, 0)
@@ -449,6 +470,11 @@ export function HeroOrbit(props: Props) {
             nextEventAt = now + randomBetween(EVENT_MIN_INTERVAL, EVENT_MAX_INTERVAL);
 
             hideEvent();
+
+            // Istok answers the delivered work with a wave from the center.
+            if (waveStartedAt === null) {
+              waveStartedAt = now;
+            }
           }
         }
       }
@@ -613,15 +639,23 @@ export function HeroOrbit(props: Props) {
           pointer-events-none
           absolute left-0 top-0 z-[16]
           whitespace-nowrap
-          font-mono text-[8px]
-          text-foreground/40
+          font-mono text-[11px]
+          text-muted-foreground
           opacity-0
           will-change-transform
         "
       />
 
       {agents.map((agent) => (
-        <div key={agent.id}>
+        <div
+          key={agent.id}
+          onPointerEnter={() => {
+            hoveredRef.current = agent.id;
+          }}
+          onPointerLeave={() => {
+            hoveredRef.current = null;
+          }}
+        >
           <div
             ref={(element) => {
               dotRefs.current[agent.id] = element;
@@ -633,6 +667,7 @@ export function HeroOrbit(props: Props) {
               ring-4 ring-background
               opacity-0
               will-change-transform
+              before:absolute before:-inset-3 before:content-['']
             "
             style={{
               backgroundColor: agent.color,
@@ -644,12 +679,13 @@ export function HeroOrbit(props: Props) {
               labelRefs.current[agent.id] = element;
             }}
             className="
-              pointer-events-none
               absolute left-0 top-0 z-30
+              cursor-default
               whitespace-nowrap
-              font-mono text-[9px]
-              text-foreground/45
+              font-mono text-[11px]
+              text-muted-foreground
               opacity-0
+              transition-colors
               will-change-transform
             "
           >
