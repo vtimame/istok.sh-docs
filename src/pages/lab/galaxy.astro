@@ -1,0 +1,40 @@
+---
+// A scratch page for trying the ASCII galaxy before it replaces the hero
+// orbit. It is not linked from the site and asks search engines to skip it.
+import Header from "@/components/layout/Header";
+import EmptyLayout from "@/layouts/EmptyLayout.astro";
+import { AsciiGalaxy } from "@/components/landing/galaxy/AsciiGalaxy";
+---
+
+<EmptyLayout title="Galaxy lab — Istok" noindex>
+  <Header client:load lang="en" />
+
+  <main class="app-container pt-20 pb-24">
+    <h1 class="font-heading text-2xl font-bold">ASCII galaxy</h1>
+
+    <section class="mt-8 grid gap-10">
+      <div>
+        <p class="mb-3 font-mono text-xs text-muted-foreground">fontSize 11 · hero size</p>
+        <div class="h-[640px] rounded-xl border border-border">
+          <AsciiGalaxy client:only="react" />
+        </div>
+      </div>
+
+      <div class="grid gap-10 md:grid-cols-2">
+        <div>
+          <p class="mb-3 font-mono text-xs text-muted-foreground">fontSize 9 · no labels</p>
+          <div class="h-[420px] rounded-xl border border-border">
+            <AsciiGalaxy client:only="react" fontSize={9} showLabels={false} />
+          </div>
+        </div>
+
+        <div>
+          <p class="mb-3 font-mono text-xs text-muted-foreground">fontSize 14 · faster</p>
+          <div class="h-[420px] rounded-xl border border-border">
+            <AsciiGalaxy client:only="react" fontSize={14} speed={0.15} />
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</EmptyLayout>
