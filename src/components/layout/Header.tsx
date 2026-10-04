@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { DocsMobileNav } from "@/components/docs/DocsMobileNav";
 import { DocsSearchDialog } from "@/components/docs/DocsSearchDialog";
 import { ColorModeButton } from "@/components/layout/ColorModeButton";
+import { LanguageMenu } from "@/components/layout/LanguageMenu";
 
 import { docsHref, homeHref, type Locale } from "@/i18n";
 import { ui } from "@/i18n/ui";
@@ -104,20 +105,12 @@ export default function Header({ lang, alternateHref, docs }: HeaderProps) {
           </a>
 
           {alternateHref && (
-            <a
-              href={alternateHref}
-              hrefLang={lang === "en" ? "ru" : "en"}
-              className={cn(
-                buttonVariants({
-                  variant: "ghost",
-                  size: "sm",
-                }),
-                docs && "hidden lg:inline-flex",
-              )}
-            >
-              <span className="sm:hidden">{lang === "en" ? "RU" : "EN"}</span>
-              <span className="hidden sm:inline">{strings.language}</span>
-            </a>
+            <LanguageMenu
+              lang={lang}
+              alternateHref={alternateHref}
+              label={strings.language}
+              className={cn(docs && "hidden lg:inline-flex")}
+            />
           )}
 
           <ColorModeButton toLight={strings.themeToLight} toDark={strings.themeToDark} />

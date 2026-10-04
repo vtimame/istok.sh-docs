@@ -50,7 +50,7 @@ export const ui: Record<Locale, UiStrings> = {
     nav: {
       docs: "Docs",
       github: "GitHub",
-      language: "Русский",
+      language: "Language",
       themeToLight: "Switch to light theme",
       themeToDark: "Switch to dark theme",
     },
@@ -88,7 +88,7 @@ export const ui: Record<Locale, UiStrings> = {
     nav: {
       docs: "Документация",
       github: "GitHub",
-      language: "English",
+      language: "Язык",
       themeToLight: "Светлая тема",
       themeToDark: "Тёмная тема",
     },
