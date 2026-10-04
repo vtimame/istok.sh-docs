@@ -1,0 +1,98 @@
+---
+import Header from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import EmptyLayout from "@/layouts/EmptyLayout.astro";
+
+import BrowserFrame from "./BrowserFrame.astro";
+import CtaSection from "./CtaSection.astro";
+import FeatureSection from "./FeatureSection.astro";
+import GetStartedSection from "./GetStartedSection.astro";
+import Hero from "./Hero.astro";
+import ProblemSection from "./ProblemSection.astro";
+import Showcase from "./Showcase.astro";
+import { HandoffVisual } from "./HandoffVisual";
+import { McpTrace } from "./McpTrace";
+import { ThreadVisual } from "./ThreadVisual";
+
+import { homeHref, locales, type Locale } from "@/i18n";
+import { landing } from "@/i18n/landing";
+import { workflowSteps } from "./workflow-steps";
+
+import taskLight from "@/assets/screenshots/task-light.webp";
+import taskDark from "@/assets/screenshots/task-dark.webp";
+import contextLight from "@/assets/screenshots/context-light.webp";
+import contextDark from "@/assets/screenshots/context-dark.webp";
+import runLight from "@/assets/screenshots/run-light.webp";
+import runDark from "@/assets/screenshots/run-dark.webp";
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const strings = landing[lang];
+
+const alternates = Object.fromEntries(locales.map((locale) => [locale, homeHref(locale)]));
+const alternateHref = homeHref(lang === "en" ? "ru" : "en");
+---
+
+<EmptyLayout lang={lang} alternates={alternates}>
+  <Header client:load lang={lang} alternateHref={alternateHref} />
+
+  <main>
+    <Hero lang={lang} strings={strings.hero} />
+    <Showcase strings={strings.showcase} />
+    <ProblemSection strings={strings.problem} />
+
+    <FeatureSection title={strings.workflow.title} body={strings.workflow.body}>
+      <McpTrace client:visible agent="Claude Code" steps={workflowSteps} />
+    </FeatureSection>
+
+    <FeatureSection title={strings.history.title} body={strings.history.body} reverse>
+      <BrowserFrame
+        light={taskLight}
+        dark={taskDark}
+        alt={strings.history.alt}
+        url="127.0.0.1:7700/projects/acme-api/tasks/18"
+      />
+    </FeatureSection>
+
+    <FeatureSection title={strings.context.title} body={strings.context.body}>
+      <BrowserFrame light={contextLight} dark={contextDark} alt={strings.context.alt} url="127.0.0.1:7700/runs/…" />
+    </FeatureSection>
+
+    <FeatureSection title={strings.handoff.title} body={strings.handoff.body} facts={strings.handoff.facts} reverse>
+      <HandoffVisual client:visible />
+    </FeatureSection>
+
+    <FeatureSection title={strings.evidence.title} body={strings.evidence.body}>
+      <BrowserFrame light={runLight} dark={runDark} alt={strings.evidence.alt} url="127.0.0.1:7700/runs/…" />
+    </FeatureSection>
+
+    <FeatureSection title={strings.local.title} body={strings.local.body} facts={strings.local.facts} reverse>
+      <ThreadVisual client:visible />
+    </FeatureSection>
+
+    <GetStartedSection lang={lang} strings={strings.start} />
+    <CtaSection lang={lang} strings={strings.cta} />
+  </main>
+
+  <Footer lang={lang} />
+</EmptyLayout>
+
+<script>
+  // Sections fade in once as they scroll into view; see [data-reveal] in global.css.
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        }
+      }
+    },
+    { rootMargin: "0px 0px -10% 0px" },
+  );
+
+  document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));
+</script>

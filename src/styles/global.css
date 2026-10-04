@@ -175,3 +175,21 @@
 .docs-content pre:not(:has(> code.language-diagram)) {
   @apply overflow-x-auto rounded-xl px-4 py-3.5 font-mono text-[0.8125rem] leading-6;
 }
+
+/* Landing sections fade in once when scrolled into view (see Landing.astro).
+   Without JavaScript or with reduced motion everything stays visible. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.7s ease-out,
+      transform 0.7s ease-out;
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  html.js [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+}

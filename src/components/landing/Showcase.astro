@@ -1,0 +1,121 @@
+---
+import BrowserFrame from "./BrowserFrame.astro";
+import SectionTitle from "./SectionTitle.astro";
+
+import type { LandingStrings } from "@/i18n/landing";
+
+import projectsLight from "@/assets/screenshots/projects-light.webp";
+import projectsDark from "@/assets/screenshots/projects-dark.webp";
+import runsLight from "@/assets/screenshots/runs-light.webp";
+import runsDark from "@/assets/screenshots/runs-dark.webp";
+import tasksLight from "@/assets/screenshots/tasks-light.webp";
+import tasksDark from "@/assets/screenshots/tasks-dark.webp";
+import searchLight from "@/assets/screenshots/search-light.webp";
+import searchDark from "@/assets/screenshots/search-dark.webp";
+
+interface Props {
+  strings: LandingStrings["showcase"];
+}
+
+const { strings } = Astro.props;
+
+const views = [
+  { id: "projects", light: projectsLight, dark: projectsDark, url: "127.0.0.1:7700" },
+  { id: "runs", light: runsLight, dark: runsDark, url: "127.0.0.1:7700/runs" },
+  { id: "tasks", light: tasksLight, dark: tasksDark, url: "127.0.0.1:7700/projects/acme-api" },
+  { id: "search", light: searchLight, dark: searchDark, url: "127.0.0.1:7700/projects/acme-api" },
+] as const;
+---
+
+<section class="border-t border-border/60 py-24 sm:py-28 lg:py-32">
+  <div class="app-container">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <SectionTitle lines={strings.title} eyebrow={strings.eyebrow} />
+
+      <p class="mx-auto mt-7 max-w-xl leading-relaxed text-muted-foreground">
+        <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">istok ui</code>
+        {strings.body}
+      </p>
+    </div>
+
+    <div class="mt-12" data-showcase data-reveal>
+      <div
+        role="tablist"
+        aria-label={strings.eyebrow}
+        class="mx-auto flex w-fit gap-1 rounded-lg bg-muted p-1"
+      >
+        {
+          views.map((view, index) => (
+            <button
+              type="button"
+              role="tab"
+              id={`showcase-tab-${view.id}`}
+              aria-controls={`showcase-panel-${view.id}`}
+              aria-selected={index === 0 ? "true" : "false"}
+              tabindex={index === 0 ? 0 : -1}
+              class="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm"
+            >
+              {strings.tabs[view.id]}
+            </button>
+          ))
+        }
+      </div>
+
+      <div class="mx-auto mt-8 grid max-w-6xl">
+        {
+          views.map((view, index) => (
+            <div
+              role="tabpanel"
+              id={`showcase-panel-${view.id}`}
+              aria-labelledby={`showcase-tab-${view.id}`}
+              data-active={index === 0 ? "true" : "false"}
+              class="[grid-area:1/1] transition-opacity duration-500 data-[active=false]:pointer-events-none data-[active=false]:invisible data-[active=false]:opacity-0"
+            >
+              <BrowserFrame
+                light={view.light}
+                dark={view.dark}
+                alt={strings.alt[view.id]}
+                url={view.url}
+                sizes="(min-width: 1200px) 1152px, 100vw"
+                eager={index === 0}
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  for (const showcase of document.querySelectorAll<HTMLElement>("[data-showcase]")) {
+    const tabs = [...showcase.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+
+    const select = (tab: HTMLButtonElement) => {
+      for (const other of tabs) {
+        const active = other === tab;
+        other.setAttribute("aria-selected", String(active));
+        other.tabIndex = active ? 0 : -1;
+
+        const panel = document.getElementById(other.getAttribute("aria-controls")!);
+        panel?.setAttribute("data-active", String(active));
+      }
+    };
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => select(tab));
+
+      // Arrow keys move between tabs, as in the WAI-ARIA tabs pattern.
+      tab.addEventListener("keydown", (event) => {
+        const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (step === 0) {
+          return;
+        }
+
+        const next = tabs[(index + step + tabs.length) % tabs.length];
+        select(next);
+        next.focus();
+      });
+    });
+  }
+</script>

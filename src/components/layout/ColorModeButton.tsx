@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-export function ColorModeButton() {
+interface ColorModeButtonProps {
+  toLight: string;
+  toDark: string;
+}
+
+export function ColorModeButton({ toLight, toDark }: ColorModeButtonProps) {
   const [mounted, setMounted] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -16,17 +21,25 @@ export function ColorModeButton() {
     const next = !isDark;
 
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
+
+    try {
+      localStorage.setItem("theme", next ? "dark" : "light");
+    } catch {
+      // The choice still applies to this page when storage is unavailable.
+    }
 
     setIsDark(next);
   };
+
+  const label = isDark ? toLight : toDark;
 
   return (
     <Button
       variant="ghost"
       size="icon-sm"
       onClick={toggleColorMode}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label={label}
+      title={label}
     >
       {mounted ? isDark ? <Sun /> : <Moon /> : <span className="size-4" />}
     </Button>

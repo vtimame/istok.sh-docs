@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 type TraceField = readonly [label: string, value: string];
 
-interface TraceStep {
+export interface TraceStep {
   tool: string;
   args?: TraceField[];
   result?: TraceField[];

@@ -1,0 +1,35 @@
+---
+interface Props {
+  lines: string[];
+  eyebrow?: string;
+  size?: "md" | "lg";
+  class?: string;
+}
+
+const { lines, eyebrow, size = "md", class: className } = Astro.props;
+---
+
+<div class={className}>
+  {
+    eyebrow && (
+      <div class="mb-5 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-500">
+        {eyebrow}
+      </div>
+    )
+  }
+
+  <h2
+    class:list={[
+      "font-cormorant font-normal italic tracking-[-0.03em]",
+      size === "lg"
+        ? "text-5xl leading-[0.92] sm:text-6xl lg:text-7xl"
+        : "text-4xl leading-[0.98] sm:text-5xl lg:text-6xl",
+    ]}
+  >
+    {
+      lines.map((line) => (
+        <span class="block">{line}</span>
+      ))
+    }
+  </h2>
+</div>

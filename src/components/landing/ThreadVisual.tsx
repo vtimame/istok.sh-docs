@@ -42,68 +42,12 @@ const agents: Agent[] = [
   },
 ];
 
-const facts = [
-  { label: "storage", value: "local" },
-  { label: "transport", value: "MCP" },
-  { label: "scope", value: "per project" },
-  { label: "agents", value: "MCP compatible" },
-];
-
 const projectState = [
   { label: "tasks", x: 550 },
   { label: "runs", x: 610 },
   { label: "context", x: 670 },
   { label: "index", x: 742 },
 ];
-
-export function LocalFirstSection() {
-  return (
-    <section className="border-t border-border/60 py-20 sm:py-24 lg:py-28 xl:py-32">
-      <div className="app-container">
-        <div
-          className="
-            grid gap-14
-            lg:grid-cols-[1.25fr_0.75fr]
-            lg:items-center
-            lg:gap-16
-            xl:grid-cols-[1.35fr_0.65fr]
-            xl:gap-20
-          "
-        >
-          <ThreadVisual />
-
-          <div className="max-w-xl lg:justify-self-end">
-            <h2
-              className="
-                font-cormorant
-                text-4xl font-normal italic
-                leading-[0.98]
-                tracking-[-0.03em]
-                sm:text-5xl
-                lg:text-6xl
-              "
-            >
-              Built around
-              <br />
-              your project.
-            </h2>
-
-            <p className="mt-7 max-w-md leading-relaxed text-muted-foreground">
-              Agents come and go. The project keeps its tasks, runs and context as one continuous
-              thread of work.
-            </p>
-
-            <div className="mt-9 grid max-w-md grid-cols-2 gap-x-8 gap-y-5">
-              {facts.map((fact) => (
-                <Fact key={fact.label} label={fact.label} value={fact.value} />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function ThreadEndMark({ x, y }: { x: number; y: number }) {
   return (
@@ -117,7 +61,7 @@ function ThreadEndMark({ x, y }: { x: number; y: number }) {
   );
 }
 
-function ThreadVisual() {
+export function ThreadVisual() {
   return (
     <div
       className="
@@ -306,25 +250,6 @@ function ThreadVisual() {
         {/* End node */}
         <ThreadEndMark x={790} y={220} />
       </svg>
-    </div>
-  );
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="font-mono">
-      <div
-        className="
-          text-[8px]
-          uppercase
-          tracking-[0.12em]
-          text-muted-foreground/35
-        "
-      >
-        {label}
-      </div>
-
-      <div className="mt-1.5 text-[10px] text-foreground/60">{value}</div>
     </div>
   );
 }

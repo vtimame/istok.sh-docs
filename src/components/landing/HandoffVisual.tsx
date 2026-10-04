@@ -1,27 +1,3 @@
-interface HandoffFact {
-  label: string;
-  value: string;
-}
-
-const facts: HandoffFact[] = [
-  {
-    label: "task",
-    value: "stays open",
-  },
-  {
-    label: "old run",
-    value: "abandoned",
-  },
-  {
-    label: "new run",
-    value: "fresh",
-  },
-  {
-    label: "context",
-    value: "retrieved again",
-  },
-];
-
 const leftMainPath = "M 170 250 C 250 250, 320 238, 392 232 C 418 230, 435 232, 448 242";
 
 const rightMainPath = "M 452 258 C 468 268, 488 270, 516 264 C 590 248, 655 244, 730 248";
@@ -34,58 +10,7 @@ const rightFiberTop = "M 454 250 C 470 260, 490 261, 516 256 C 590 242, 656 237,
 
 const rightFiberBottom = "M 450 266 C 468 277, 490 279, 518 273 C 592 257, 658 252, 730 256";
 
-export function AgentHandoffSection() {
-  return (
-    <section className="border-t border-border/60 py-20 sm:py-24 lg:py-28 xl:py-32">
-      <div className="app-container">
-        <div
-          className="
-            grid gap-12
-
-            lg:grid-cols-[0.62fr_1.38fr]
-            lg:items-center
-            lg:gap-12
-
-            xl:grid-cols-[0.58fr_1.42fr]
-            xl:gap-14
-          "
-        >
-          <div className="max-w-xl">
-            <h2
-              className="
-                font-cormorant
-                text-4xl font-normal italic
-                leading-[0.98]
-                tracking-[-0.03em]
-                sm:text-5xl
-                lg:text-6xl
-              "
-            >
-              Switch agents.
-              <br />
-              Keep the work.
-            </h2>
-
-            <p className="mt-7 max-w-md leading-relaxed text-muted-foreground">
-              One agent can stop, another can continue, but the task remains the same. Istok keeps
-              the work as one continuous thread across runs.
-            </p>
-
-            <div className="mt-9 grid max-w-md grid-cols-2 gap-x-8 gap-y-5">
-              {facts.map((fact) => (
-                <Fact key={fact.label} label={fact.label} value={fact.value} />
-              ))}
-            </div>
-          </div>
-
-          <ThreadTransferVisual />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ThreadTransferVisual() {
+export function HandoffVisual() {
   return (
     <div
       className="
@@ -367,25 +292,6 @@ function StateLabel({ label, className }: { label: string; className?: string })
       `}
     >
       {label}
-    </div>
-  );
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="font-mono">
-      <div
-        className="
-          text-[8px]
-          uppercase
-          tracking-[0.12em]
-          text-muted-foreground/35
-        "
-      >
-        {label}
-      </div>
-
-      <div className="mt-1.5 text-[10px] text-foreground/60">{value}</div>
     </div>
   );
 }

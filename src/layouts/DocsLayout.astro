@@ -11,6 +11,7 @@ import {
 } from "astro:content";
 
 import { createDocsNavigation } from "@/lib/docs/navigation";
+import { docsHref, isLocale, locales } from "@/i18n";
 
 interface Heading {
   depth: number;
@@ -38,14 +39,33 @@ const navigation = createDocsNavigation(
   entries,
   lang,
 );
+
+const locale = isLocale(lang) ? lang : "en";
+
+// The same page in every language it exists in, for hreflang and the switcher.
+const [, ...slugParts] = entry.id.split("/");
+const slug = slugParts.join("/");
+
+const alternates = Object.fromEntries(
+  locales
+    .filter((other) => entries.some((candidate) => candidate.id === `${other}/${slug}`))
+    .map((other) => [other, docsHref(other, slug)]),
+);
+
+const otherLocale = locale === "en" ? "ru" : "en";
+const alternateHref = alternates[otherLocale] ?? docsHref(otherLocale, "getting-started/introduction");
 ---
 
 <EmptyLayout
-  lang={lang} title={`${entry.data.title} — Istok`}
+  lang={lang}
+  title={`${entry.data.title} — Istok`}
   description={entry.data.description}
+  alternates={alternates}
 >
   <Header
     client:load
+    lang={locale}
+    alternateHref={alternateHref}
     docs={{
       pathname,
       groups: navigation,

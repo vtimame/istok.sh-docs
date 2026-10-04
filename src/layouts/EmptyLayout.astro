@@ -1,19 +1,22 @@
 ---
 import "@/styles/global.css";
 
+import { isLocale, locales } from "@/i18n";
+import { ui } from "@/i18n/ui";
+
 interface Props {
   lang?: string;
   title?: string;
   description?: string;
   image?: string;
+  alternates?: Partial<Record<string, string>>;
 }
 
-const {
-  lang = "en",
-  title = "Istok — One workspace for every coding agent",
-  description = "Keep tasks, context and progress with your project — not inside an agent session.",
-  image = "/og.png",
-} = Astro.props;
+const { lang = "en", image = "/og.png", alternates = {} } = Astro.props;
+
+const strings = ui[isLocale(lang) ? lang : "en"];
+const title = Astro.props.title ?? strings.meta.title;
+const description = Astro.props.description ?? strings.meta.description;
 
 const site = Astro.site ?? new URL("https://istok.sh");
 
@@ -21,9 +24,23 @@ const canonicalUrl = new URL(Astro.url.pathname, site);
 const imageUrl = new URL(image, site);
 ---
 
-<html lang={lang} class="dark">
+<html lang={lang}>
 <head>
   <meta charset="utf-8" />
+
+  <script is:inline>
+    // Apply the saved or system theme before the first paint.
+    (() => {
+      let theme = null;
+      try {
+        theme = localStorage.getItem("theme");
+      } catch {}
+
+      const dark = theme ? theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.classList.toggle("dark", dark);
+      document.documentElement.classList.add("js");
+    })();
+  </script>
 
   <meta
     name="viewport"
@@ -40,6 +57,14 @@ const imageUrl = new URL(image, site);
     rel="canonical"
     href={canonicalUrl}
   />
+
+  {
+    locales.map((locale) =>
+      alternates[locale] ? (
+        <link rel="alternate" hreflang={locale} href={new URL(alternates[locale]!, site)} />
+      ) : null,
+    )
+  }
 
   <title>{title}</title>
 
@@ -95,7 +120,7 @@ const imageUrl = new URL(image, site);
 
   <meta
     property="og:image:alt"
-    content="Istok — One workspace for every coding agent"
+    content={title}
   />
 
   <meta
