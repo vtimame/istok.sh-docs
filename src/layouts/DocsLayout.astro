@@ -152,3 +152,33 @@ const alternateHref = alternates[otherLocale] ?? docsHref(otherLocale, "getting-
     </div>
   </div>
 </EmptyLayout>
+
+<script>
+  // Every code block gets a copy button; the label comes from the page language.
+  const copied = document.documentElement.lang === "ru" ? "Скопировано" : "Copied";
+  const copy = document.documentElement.lang === "ru" ? "Копировать" : "Copy";
+
+  for (const pre of document.querySelectorAll<HTMLPreElement>(".docs-content pre")) {
+    if (pre.closest(".docs-code") || pre.querySelector("code.language-diagram")) continue;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "docs-code";
+    pre.replaceWith(wrapper);
+    wrapper.append(pre);
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = copy;
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(pre.innerText.replace(/\n$/, ""));
+        button.textContent = copied;
+        setTimeout(() => (button.textContent = copy), 1500);
+      } catch {
+        // Clipboard access can be denied; the text is still selectable.
+      }
+    });
+    wrapper.append(button);
+  }
+</script>
+

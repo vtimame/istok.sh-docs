@@ -1,0 +1,113 @@
+---
+// Tabs for alternatives such as one setup per coding agent:
+//
+//   <Tabs labels={["Claude Code", "Codex"]} group="agent">
+//     <Tab>…</Tab>
+//     <Tab>…</Tab>
+//   </Tabs>
+//
+// Tabs that share a group switch together across the page, and the choice is
+// remembered for the next page.
+
+interface Props {
+  labels: string[];
+  group?: string;
+}
+
+const { labels, group } = Astro.props;
+const id = `tabs-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div class="not-prose my-6" data-tabs data-group={group}>
+  <div role="tablist" class="flex flex-wrap gap-1 border-b border-border">
+    {
+      labels.map((label, index) => (
+        <button
+          type="button"
+          role="tab"
+          id={`${id}-tab-${index}`}
+          aria-controls={`${id}-panel-${index}`}
+          aria-selected={index === 0 ? "true" : "false"}
+          tabindex={index === 0 ? 0 : -1}
+          data-label={label}
+          class="-mb-px border-b-2 border-transparent px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground aria-selected:border-primary aria-selected:text-foreground"
+        >
+          {label}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="docs-tab-panels pt-4" data-panels data-id={id}>
+    <slot />
+  </div>
+</div>
+
+<script>
+  const storageKey = (group: string) => `istok-docs-tab-${group}`;
+
+  const select = (root: HTMLElement, label: string) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>(':scope > [role="tablist"] > [role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>(":scope > [data-panels] > [data-tab]")];
+    const index = Math.max(0, tabs.findIndex((tab) => tab.dataset.label === label));
+
+    tabs.forEach((tab, position) => {
+      tab.setAttribute("aria-selected", String(position === index));
+      tab.tabIndex = position === index ? 0 : -1;
+    });
+    panels.forEach((panel, position) => {
+      panel.hidden = position !== index;
+    });
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-tabs]")) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>(':scope > [role="tablist"] > [role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>(":scope > [data-panels] > [data-tab]")];
+    const group = root.dataset.group;
+
+    // Panels get their ARIA wiring here, since Tab does not know its position.
+    panels.forEach((panel, index) => {
+      panel.id = tabs[index]?.getAttribute("aria-controls") ?? "";
+      panel.setAttribute("role", "tabpanel");
+      panel.setAttribute("aria-labelledby", tabs[index]?.id ?? "");
+    });
+
+    let remembered: string | null = null;
+    try {
+      remembered = group ? localStorage.getItem(storageKey(group)) : null;
+    } catch {
+      // Storage may be unavailable; the first tab stays selected.
+    }
+    select(root, remembered ?? tabs[0]?.dataset.label ?? "");
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        const label = tab.dataset.label ?? "";
+
+        if (!group) {
+          select(root, label);
+          return;
+        }
+
+        // Every tab set in the same group follows the choice.
+        for (const other of document.querySelectorAll<HTMLElement>(`[data-tabs][data-group="${group}"]`)) {
+          select(other, label);
+        }
+        try {
+          localStorage.setItem(storageKey(group), label);
+        } catch {
+          // Not remembering the choice is fine.
+        }
+      });
+
+      tab.addEventListener("keydown", (event) => {
+        const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (step === 0) return;
+
+        const next = tabs[(index + step + tabs.length) % tabs.length];
+        next.click();
+        next.focus();
+      });
+    });
+  }
+</script>

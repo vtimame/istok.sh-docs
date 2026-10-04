@@ -1,0 +1,33 @@
+---
+// A short aside in a docs page:
+//
+//   <Callout type="tip" title="Optional title">Text</Callout>
+
+import { Info, Lightbulb, TriangleAlert } from "lucide-react";
+
+interface Props {
+  type?: "note" | "tip" | "warning";
+  title?: string;
+}
+
+const { type = "note", title } = Astro.props;
+
+const styles = {
+  note: { icon: Info, box: "border-border bg-muted/40", accent: "text-muted-foreground" },
+  tip: { icon: Lightbulb, box: "border-emerald-500/30 bg-emerald-500/5", accent: "text-emerald-600 dark:text-emerald-400" },
+  warning: { icon: TriangleAlert, box: "border-amber-500/40 bg-amber-500/5", accent: "text-amber-600 dark:text-amber-400" },
+}[type];
+
+const Icon = styles.icon;
+---
+
+<aside class:list={["not-prose my-6 flex gap-3 rounded-xl border px-4 py-3.5 text-sm leading-6", styles.box]}>
+  <Icon className={`mt-0.5 size-4 shrink-0 ${styles.accent}`} aria-hidden="true" />
+
+  <div class="min-w-0">
+    {title && <p class="mb-1 font-medium text-foreground">{title}</p>}
+    <div class="text-foreground/85 [&_a]:underline [&_a]:underline-offset-4 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:font-mono [&_code]:text-[0.85em] [&>p+p]:mt-2">
+      <slot />
+    </div>
+  </div>
+</aside>

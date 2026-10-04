@@ -27,11 +27,14 @@ export function pageUrl(entry: CollectionEntry<"docs">) {
   return `${site}/docs/${entry.id}`;
 }
 
-// MDX pages import components and render screenshots; agents only need the prose.
+// MDX pages import components and render screenshots; agents only need the
+// prose. Self-closing components (screenshots) go away, wrapping ones (tabs,
+// callouts, prompts) keep their text.
 export function plainBody(entry: CollectionEntry<"docs">) {
   return (entry.body ?? "")
     .replace(/^import .*$/gm, "")
-    .replace(/^<[A-Z][\s\S]*?\/>\s*$/gm, "")
+    .replace(/<[A-Z][^>]*\/>/g, "")
+    .replace(/<\/?[A-Z][^>]*>/g, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }

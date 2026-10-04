@@ -233,3 +233,36 @@
     background-position: 100% 50%;
   }
 }
+
+/* Docs: inline code as a quiet chip, without the quotes typography adds. */
+.docs-content code::before,
+.docs-content code::after {
+  content: none;
+}
+
+.docs-content :not(pre) > code {
+  @apply rounded-md bg-muted px-1.5 py-0.5 font-mono text-[0.85em] font-normal text-foreground;
+}
+
+/* Scrollbars follow the theme instead of the browser's light default. */
+* {
+  scrollbar-color: color-mix(in oklab, var(--foreground) 22%, transparent) transparent;
+}
+
+aside,
+nav {
+  scrollbar-width: thin;
+}
+
+/* The copy button docs code blocks get from DocsLayout. */
+.docs-code {
+  position: relative;
+}
+
+.docs-code > button {
+  @apply absolute top-2 right-2 rounded-md border border-border bg-background/80 px-2 py-1 font-sans text-xs text-muted-foreground opacity-0 transition-opacity hover:text-foreground focus-visible:opacity-100;
+}
+
+.docs-code:hover > button {
+  opacity: 1;
+}
