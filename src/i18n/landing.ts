@@ -68,7 +68,7 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     showcase: {
       title: ["See what your agents", "are working on."],
-      body: "opens a local dashboard for every project, task and run. It updates live as agents write, and never leaves your machine.",
+      body: "`istok ui` opens a local dashboard for every project, task and run that updates live as agents write. The same data is in your terminal through `istok task`, `istok run` and the rest of the CLI. Nothing leaves your machine.",
       tabs: {
         projects: "Projects",
         runs: "Runs",
@@ -182,8 +182,8 @@ export const landing: Record<Locale, LandingStrings> = {
       docs: "Документация",
     },
     showcase: {
-      title: ["Видно, чем заняты", "ваши агенты."],
-      body: "открывает локальную панель со всеми проектами, задачами и запусками. Она обновляется вживую, пока агенты работают, и не покидает ваш компьютер.",
+      title: ["Следите за работой", "ваших агентов."],
+      body: "`istok ui` открывает локальную панель со всеми проектами, задачами и запусками, которая обновляется вживую, пока агенты работают. Те же данные доступны в терминале через `istok task`, `istok run` и другие команды CLI. Всё остаётся на вашем компьютере.",
       tabs: {
         projects: "Проекты",
         runs: "Запуски",

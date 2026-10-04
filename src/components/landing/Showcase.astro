@@ -33,8 +33,16 @@ const views = [
       <SectionTitle lines={strings.title} />
 
       <p class="mx-auto mt-7 max-w-xl leading-relaxed text-muted-foreground">
-        <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">istok ui</code>
-        {strings.body}
+        {
+          // Backticks in the copy mark commands.
+          strings.body.split(/`([^`]+)`/).map((part, index) =>
+            index % 2 === 1 ? (
+              <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">{part}</code>
+            ) : (
+              part
+            ),
+          )
+        }
       </p>
     </div>
 
