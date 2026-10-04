@@ -109,3 +109,15 @@ export function spawn(lines: Streamline[]): Streak {
     shade: Math.random(),
   };
 }
+
+// buildSymmetricStreamlines mirrors the lines below the axis, for a well that
+// the light passes on both sides. They are interleaved inner first, so spawn's
+// preference for inner lines holds above and below.
+export function buildSymmetricStreamlines(width: number, radius: number, top: number): Streamline[] {
+  const above = buildStreamlines(width, radius, top);
+
+  return above.flatMap((line) => [
+    line,
+    { points: line.points.map((point) => ({ x: point.x, y: -point.y })), lengths: line.lengths },
+  ]);
+}

@@ -43,6 +43,8 @@ const { lang, strings } = Astro.props;
       2xl:max-w-[560px]
     "
   >
-    <HeroOrbit client:load size={960} />
+    <slot name="visual">
+      <HeroOrbit client:load size={960} />
+    </slot>
   </div>
 </section>
