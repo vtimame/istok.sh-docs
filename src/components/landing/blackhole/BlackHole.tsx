@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { dropDuration, hoveringAgents, nextDrop, type Drop } from "./agents";
+import { hoveringAgents } from "./agents";
 import { buildStreamlines, flowSpeed, pointAt, spawn, streakCount, type Point, type Streak, type Streamline } from "./flow";
 import { readPalette, type Palette, type Tone } from "./palette";
 
@@ -15,7 +15,7 @@ import { readPalette, type Palette, type Tone } from "./palette";
 interface BlackHoleProps {
   // "brand" draws the mark and the light in Istok's emerald; "mono" in ink.
   tone?: Tone;
-  // Coding agents hovering over the hole and dropping work into it.
+  // Coding agents hovering over the hole.
   agents?: boolean;
   // Share of the canvas height above the disc line.
   baseline?: number;
@@ -74,9 +74,6 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
     // The intro starts the first time the canvas is seen; without motion it is skipped.
     let introAt: number | null = reducedMotion ? -Infinity : null;
 
-    let drop: Drop = nextDrop(performance.now() + agentStart, null);
-    let flashUntil = 0;
-
     // Geometry: the hole's size follows the width, the disc sits near the bottom.
     const resize = () => {
       const ratio = window.devicePixelRatio || 1;
@@ -108,7 +105,7 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
         if (reveal <= 0) return;
 
         const reach = (reveal * (width + 40)) / 2;
-        context.globalAlpha = (0.06 + 0.14 * (1 - index / lines.length)) * reveal;
+        context.globalAlpha = (0.05 + 0.1 * (1 - index / lines.length)) * reveal;
         context.strokeStyle = palette.line(index / lines.length);
         context.beginPath();
 
@@ -173,8 +170,7 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
     const drawArc = (scale: number, now: number, strength: number) => {
       const centerX = width / 2;
       const size = radius * scale;
-      const flash = now < flashUntil ? (flashUntil - now) / 600 : 0;
-      const flicker = (0.92 + 0.08 * Math.sin(now / 260)) * strength * (1 + 0.6 * flash);
+      const flicker = (0.92 + 0.08 * Math.sin(now / 260)) * strength;
 
       const band = (outer: number, alpha: number) => {
         const gradient = context.createRadialGradient(centerX, baseline, size * 1.02, centerX, baseline, size * outer);
@@ -194,12 +190,12 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
       context.save();
       if (palette.dark) {
         context.globalCompositeOperation = "lighter";
-        band(1.9, 0.3);
-        band(1.28, 0.75);
+        band(1.9, 0.16);
+        band(1.28, 0.38);
       } else {
         // On paper a glow turns muddy, so the arc is a crisp line with a gap.
-        band(1.7, 0.12);
-        context.globalAlpha = 0.85 * flicker;
+        band(1.7, 0.08);
+        context.globalAlpha = 0.6 * flicker;
         context.strokeStyle = palette.glow;
         context.lineWidth = 2.2;
         context.beginPath();
@@ -255,7 +251,7 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
         context.shadowBlur = 14;
       }
       context.strokeStyle = gradient;
-      context.globalAlpha = 0.9;
+      context.globalAlpha = 0.7;
       context.lineWidth = 1.5;
       context.beginPath();
       context.moveTo(0, baseline);
@@ -264,7 +260,9 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
       context.restore();
     };
 
-    // Agents hover in place with a slow bob; their labels hide on narrow screens.
+    // Agents hover in place like weightless objects: small tags with a slow
+    // bob and tilt, untouched by the light racing past. Narrow screens keep
+    // only their colored marks.
     const agentPoint = (index: number, now: number): Point => {
       const agent = hoveringAgents[index];
       const bob = Math.sin(now / 1100 + agent.phase) * radius * 0.05;
@@ -276,9 +274,10 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
     };
 
     const drawAgents = (elapsed: number, now: number) => {
-      const labels = width >= 640;
+      const named = width >= 640;
       context.font = `11px "Geist Mono", ui-monospace, monospace`;
       context.textBaseline = "middle";
+      context.textAlign = "left";
 
       hoveringAgents.forEach((agent, index) => {
         const reveal = easeOutCubic(clamp((elapsed - agentStart - index * agentStagger) / 700));
@@ -287,56 +286,41 @@ export function BlackHole({ tone = "brand", agents = true, baseline: baselineSha
         const { x, y } = agentPoint(index, now);
         const color = agent.color === "ink" ? palette.ink : agent.color;
 
-        const halo = context.createRadialGradient(x, y, 0, x, y, 14);
-        halo.addColorStop(0, color);
-        halo.addColorStop(1, "transparent");
-        context.globalAlpha = 0.3 * reveal;
-        context.fillStyle = halo;
-        context.beginPath();
-        context.arc(x, y, 14, 0, Math.PI * 2);
-        context.fill();
+        const textWidth = named ? context.measureText(agent.name).width : 0;
+        const tagWidth = named ? textWidth + 26 : 14;
+        const tagHeight = 22;
 
+        context.save();
+        context.translate(x, y - (1 - reveal) * 8);
+        context.rotate(Math.sin(now / 2300 + agent.phase) * 0.05);
         context.globalAlpha = reveal;
-        context.fillStyle = color;
-        context.beginPath();
-        context.arc(x, y, 3.5, 0, Math.PI * 2);
-        context.fill();
 
-        if (labels) {
-          context.globalAlpha = 0.85 * reveal;
-          context.fillStyle = palette.muted;
-          context.fillText(agent.name, x + 10, y);
+        // The tag: a card with a hairline border and a soft shadow below.
+        if (!palette.dark) {
+          context.shadowColor = "rgba(0, 0, 0, 0.08)";
+          context.shadowBlur = 12;
+          context.shadowOffsetY = 4;
         }
-      });
-
-      // A dropped piece of work falls into the hole, speeding up as it goes.
-      if (elapsed < agentStart + 1200 || now < drop.startedAt) {
-        context.globalAlpha = 1;
-        return;
-      }
-
-      const progress = (now - drop.startedAt) / dropDuration;
-      if (progress >= 1) {
-        flashUntil = now + 600;
-        drop = nextDrop(now, drop);
-        context.globalAlpha = 1;
-        return;
-      }
-
-      const from = agentPoint(drop.agent, now);
-      const to = toScreen({ x: 0, y: radius * 0.35 });
-      const fall = progress * progress;
-      const agent = hoveringAgents[drop.agent];
-      const color = agent.color === "ink" ? palette.ink : agent.color;
-
-      for (let trail = 0; trail < 10; trail++) {
-        const point = Math.max(0, fall - trail * 0.02);
-        context.globalAlpha = (1 - trail / 10) * 0.9;
-        context.fillStyle = trail === 0 ? color : palette.glow;
+        context.fillStyle = palette.card;
+        context.strokeStyle = palette.border;
+        context.lineWidth = 1;
         context.beginPath();
-        context.arc(from.x + (to.x - from.x) * point, from.y + (to.y - from.y) * point, trail === 0 ? 2.6 : 1.5, 0, Math.PI * 2);
+        context.roundRect(-tagWidth / 2, -tagHeight / 2, tagWidth, tagHeight, 6);
         context.fill();
-      }
+        context.shadowColor = "transparent";
+        context.stroke();
+
+        // A caret in the agent's color, like a terminal cursor.
+        context.fillStyle = color;
+        context.fillRect(-tagWidth / 2 + 8, -5, named ? 5 : tagWidth - 16 + 0.5, 10);
+
+        if (named) {
+          context.fillStyle = palette.muted;
+          context.fillText(agent.name, -tagWidth / 2 + 18, 0.5);
+        }
+
+        context.restore();
+      });
 
       context.globalAlpha = 1;
     };
