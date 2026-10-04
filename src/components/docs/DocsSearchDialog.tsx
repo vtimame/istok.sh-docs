@@ -219,7 +219,7 @@ export function DocsSearchDialog({ groups, strings, className }: DocsSearchDialo
 
         <kbd
           className="
-            ml-auto
+            ml-auto shrink-0 whitespace-nowrap
             rounded-md border border-border/60
             bg-background/60
             px-1.5 py-0.5

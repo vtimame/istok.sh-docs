@@ -20,6 +20,13 @@ export default defineConfig({
       type: "shiki",
       excludeLangs: ["diagram", "math"],
     },
+    // Both themes are emitted; the light one shows by default and
+    // global.css switches to --shiki-dark under .dark. Long lines wrap, so
+    // prose-like blocks (agent instructions) read without scrolling.
+    shikiConfig: {
+      themes: { light: "github-light", dark: "github-dark" },
+      wrap: true,
+    },
   },
   vite: {
     plugins: [tailwindcss()],

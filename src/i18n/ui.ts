@@ -93,7 +93,7 @@ export const ui: Record<Locale, UiStrings> = {
       themeToDark: "Тёмная тема",
     },
     docs: {
-      searchButton: "Поиск по документации...",
+      searchButton: "Поиск...",
       searchLabel: "Поиск по документации",
       searchPlaceholder: "Искать в документации...",
       searchUnavailable: "В режиме разработки поиск недоступен. Соберите сайт, чтобы появился поисковый индекс.",
