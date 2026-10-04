@@ -1,16 +1,13 @@
 ---
 import SectionTitle from "./SectionTitle.astro";
 
-import type { Fact } from "@/i18n/landing";
-
 interface Props {
   title: string[];
   body: string;
-  facts?: Fact[];
   reverse?: boolean;
 }
 
-const { title, body, facts = [], reverse = false } = Astro.props;
+const { title, body, reverse = false } = Astro.props;
 ---
 
 <section class="border-t border-border/60 py-24 sm:py-28 lg:py-32">
@@ -25,21 +22,6 @@ const { title, body, facts = [], reverse = false } = Astro.props;
         <SectionTitle lines={title} />
 
         <p class="mt-7 max-w-md leading-relaxed text-muted-foreground">{body}</p>
-
-        {
-          facts.length > 0 && (
-            <dl class="mt-9 grid max-w-md grid-cols-2 gap-x-8 gap-y-5 font-mono">
-              {facts.map((fact) => (
-                <div>
-                  <dt class="text-[9px] uppercase tracking-[0.12em] text-muted-foreground/70">
-                    {fact.label}
-                  </dt>
-                  <dd class="mt-1.5 text-[11px] text-foreground/70">{fact.value}</dd>
-                </div>
-              ))}
-            </dl>
-          )
-        }
       </div>
 
       <div class:list={["min-w-0", reverse && "lg:order-1"]} data-reveal>

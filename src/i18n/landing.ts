@@ -1,10 +1,5 @@
 import type { Locale } from "@/i18n";
 
-export interface Fact {
-  label: string;
-  value: string;
-}
-
 export interface FeatureCopy {
   title: string[];
   body: string;
@@ -42,7 +37,7 @@ export interface LandingStrings {
   history: FeatureCopy & { alt: string };
   context: FeatureCopy & { alt: string };
   evidence: FeatureCopy & { alt: string };
-  local: FeatureCopy & { facts: Fact[] };
+  local: FeatureCopy;
   start: {
     title: string[];
     steps: { title: string; body: string; code: string; prompt?: boolean }[];
@@ -111,12 +106,6 @@ export const landing: Record<Locale, LandingStrings> = {
     local: {
       title: ["Everything stays", "on your machine."],
       body: "One binary and one SQLite file. No account, no cloud. Agents come and go; the project keeps its history.",
-      facts: [
-        { label: "Storage", value: "local SQLite" },
-        { label: "Transport", value: "MCP" },
-        { label: "Data", value: "on your machine" },
-        { label: "Agents", value: "any MCP client" },
-      ],
     },
     start: {
       title: ["Up and running", "in a minute."],
@@ -207,12 +196,6 @@ export const landing: Record<Locale, LandingStrings> = {
     local: {
       title: ["Всё остаётся", "на вашем компьютере."],
       body: "Один бинарник и один файл SQLite. Без аккаунта и облака. Агенты приходят и уходят, а история остаётся с проектом.",
-      facts: [
-        { label: "Хранилище", value: "локальный SQLite" },
-        { label: "Протокол", value: "MCP" },
-        { label: "Данные", value: "на вашем компьютере" },
-        { label: "Агенты", value: "любой MCP-клиент" },
-      ],
     },
     start: {
       title: ["Начать —", "дело минуты."],
