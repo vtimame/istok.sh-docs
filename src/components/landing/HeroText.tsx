@@ -55,10 +55,10 @@ export function HeroText({ title, subtitle, copyLabel, copiedLabel, docsLabel, d
     <div className="space-y-6">
       <h1
         className={`
-          font-cormorant
-          text-5xl font-normal italic leading-[0.95] tracking-[-0.035em]
+          font-heading
+          text-5xl font-bold leading-[1.02] tracking-[-0.035em]
           transition-[opacity,transform] duration-700 ease-out
-          sm:text-7xl
+          sm:text-6xl
           ${visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}
         `}
         style={{ transitionDelay: "100ms" }}

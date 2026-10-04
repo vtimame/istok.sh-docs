@@ -11,10 +11,10 @@ const { lines, size = "md", class: className } = Astro.props;
 <div class={className}>
   <h2
     class:list={[
-      "font-cormorant font-normal italic tracking-[-0.03em]",
+      "font-heading font-bold tracking-[-0.03em]",
       size === "lg"
-        ? "text-5xl leading-[0.92] sm:text-6xl lg:text-7xl"
-        : "text-4xl leading-[0.98] sm:text-5xl lg:text-6xl",
+        ? "text-4xl leading-[1.02] sm:text-5xl lg:text-6xl"
+        : "text-3xl leading-[1.05] sm:text-4xl lg:text-5xl",
     ]}
   >
     {
