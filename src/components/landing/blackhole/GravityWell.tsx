@@ -3,14 +3,13 @@ import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 import { orbitingAgents, orbitSpeed } from "./agents";
-import { buildSymmetricStreamlines, flowSpeed, pointAt, spawn, type Point, type Streak, type Streamline } from "./flow";
 import { readPalette, type Palette } from "./palette";
+import { advanceSwirl, innerOrbit, outerOrbit, spawnSwirl, swirlCount, swirlFade, type Swirl } from "./swirl";
 
-// The hero visual: the Istok mark as a gravity well. Light streams past it
-// from left to right and bends around it, and coding agents orbit it on tilted
-// paths, passing behind the mark on the far side. On first sight the mark
-// grows, its rings unfold, the light draws outwards and the agents swing into
-// their orbits fast before settling.
+// The hero visual, seen from above: the Istok mark as a gravity well with
+// concentric orbits. Light circles it and slowly spirals in, and coding agents
+// orbit it on the rings. On first sight the mark grows, its rings unfold and
+// the light and the agents swing in fast before settling.
 
 interface GravityWellProps {
   className?: string;
@@ -19,9 +18,6 @@ interface GravityWellProps {
 const markRatios = [1, 0.8, 0.6, 0.4, 0.2];
 const markOpacities = [0.1, 0.3, 0.5, 0.8, 1];
 
-// Orbits are circles seen at an angle; the squash reads as tilt.
-const tilt = 0.38;
-const streakCount = 90;
 
 // Intro timing, in milliseconds after the canvas first comes into view.
 const markDuration = 650;
@@ -29,9 +25,7 @@ const ringStart = 180;
 const ringStagger = 120;
 const ringDuration = 900;
 const lightStart = 350;
-const lightStagger = 14;
-const lightDuration = 1100;
-const streakStart = 800;
+const lightDuration = 900;
 const agentStart = 400;
 const agentRevealDuration = 1400;
 const spinDuration = 2600;
@@ -77,8 +71,7 @@ export function GravityWell({ className }: GravityWellProps) {
     let width = 0;
     let height = 0;
     let radius = 0;
-    let lines: Streamline[] = [];
-    let streaks: Streak[] = [];
+    let swirls: Swirl[] = Array.from({ length: swirlCount }, () => spawnSwirl(true));
     let palette: Palette = readPalette(canvas, "brand");
 
     let introAt: number | null = reducedMotion ? -Infinity : null;
@@ -92,17 +85,14 @@ export function GravityWell({ className }: GravityWellProps) {
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-      radius = Math.min(width, height) * 0.145;
-      lines = buildSymmetricStreamlines(width + 40, radius, (height / 2) * 1.05);
-      streaks = Array.from({ length: streakCount }, () => {
-        const streak = spawn(lines);
-        streak.distance = Math.random() * lines[streak.line].lengths.at(-1)!;
-        return streak;
-      });
+      radius = Math.min(width, height) * 0.13;
     };
 
-    // Plane coordinates have y up and the origin in the well's center.
-    const toScreen = (point: Point): Point => ({ x: width / 2 + point.x, y: height / 2 - point.y });
+    // A point on an orbit, in canvas pixels.
+    const onOrbit = (orbit: number, angle: number) => ({
+      x: width / 2 + Math.cos(angle) * orbit * radius,
+      y: height / 2 + Math.sin(angle) * orbit * radius,
+    });
 
     const agentColor = (index: number) => {
       const color = orbitingAgents[index].color;
@@ -113,68 +103,45 @@ export function GravityWell({ className }: GravityWellProps) {
       return color;
     };
 
-    const drawLines = (elapsed: number) => {
+    // Faint guides of the disc, so the swirl reads as a plane.
+    const drawGuides = (reveal: number) => {
+      context.strokeStyle = palette.glow;
       context.lineWidth = 1;
 
-      lines.forEach((line, index) => {
-        const reveal = easeOutCubic(clamp((elapsed - lightStart - index * lightStagger) / lightDuration));
-        if (reveal <= 0) return;
-
-        const depth = index / lines.length;
-        const reach = (reveal * (width + 40)) / 2;
-        context.globalAlpha = (0.04 + 0.1 * (1 - depth)) * reveal;
-        context.strokeStyle = palette.line(depth);
+      for (let step = 0; step < 6; step++) {
+        const orbit = innerOrbit + 0.25 + (step / 5) * (outerOrbit - innerOrbit - 0.25);
+        context.globalAlpha = 0.05 * reveal;
         context.beginPath();
-
-        let started = false;
-        for (const point of line.points) {
-          if (Math.abs(point.x) > reach) continue;
-          const { x, y } = toScreen(point);
-          if (!started) {
-            context.moveTo(x, y);
-            started = true;
-          } else {
-            context.lineTo(x, y);
-          }
-        }
+        context.arc(width / 2, height / 2, orbit * radius, 0, Math.PI * 2);
         context.stroke();
-      });
+      }
+
+      context.globalAlpha = 1;
     };
 
-    const drawStreaks = (elapsed: number, delta: number) => {
-      const shown = clamp((elapsed - streakStart) / 400);
-      if (shown <= 0) return;
-
+    const drawSwirls = (reveal: number) => {
       context.lineCap = "round";
       context.lineWidth = 1.3;
 
-      streaks.forEach((streak, index) => {
-        const line = lines[streak.line];
-        const total = line.lengths.at(-1)!;
+      for (const swirl of swirls) {
+        const fade = swirlFade(swirl.orbit) * reveal * swirl.alpha;
+        if (fade <= 0) continue;
 
-        const here = pointAt(line, Math.max(0, streak.distance));
-        streak.distance += streak.speed * flowSpeed(here, radius) * delta;
-
-        if (streak.distance - streak.length > total) {
-          streaks[index] = spawn(lines);
-          return;
-        }
-
-        const head = toScreen(pointAt(line, Math.min(total, Math.max(0, streak.distance))));
-        const middle = toScreen(pointAt(line, Math.max(0, streak.distance - streak.length / 2)));
-        const tail = toScreen(pointAt(line, Math.max(0, streak.distance - streak.length)));
+        const head = onOrbit(swirl.orbit, swirl.angle);
+        const middle = onOrbit(swirl.orbit, swirl.angle - swirl.length / 2);
+        const tail = onOrbit(swirl.orbit, swirl.angle - swirl.length);
 
         const gradient = context.createLinearGradient(tail.x, tail.y, head.x, head.y);
         gradient.addColorStop(0, "transparent");
-        gradient.addColorStop(1, palette.streak(streak.shade));
+        gradient.addColorStop(1, palette.streak(swirl.shade));
 
-        context.globalAlpha = streak.alpha * shown * 0.85;
+        context.globalAlpha = fade;
         context.strokeStyle = gradient;
         context.beginPath();
         context.moveTo(tail.x, tail.y);
-        context.quadraticCurveTo(middle.x, middle.y, head.x, head.y);
+        context.quadraticCurveTo(2 * middle.x - (head.x + tail.x) / 2, 2 * middle.y - (head.y + tail.y) / 2, head.x, head.y);
         context.stroke();
-      });
+      }
 
       context.globalAlpha = 1;
     };
@@ -188,7 +155,7 @@ export function GravityWell({ className }: GravityWellProps) {
       orbits.forEach((orbit) => {
         context.globalAlpha = 0.12 * reveal;
         context.beginPath();
-        context.ellipse(width / 2, height / 2, orbit * radius, orbit * radius * tilt, 0, 0, Math.PI * 2);
+        context.arc(width / 2, height / 2, orbit * radius, 0, Math.PI * 2);
         context.stroke();
       });
       context.globalAlpha = 1;
@@ -226,17 +193,14 @@ export function GravityWell({ className }: GravityWellProps) {
       context.globalAlpha = 1;
     };
 
-    // Agents: a round badge with the agent's mark. Far ones are smaller and dimmer.
+    // Agents: a round badge with the agent's mark, riding its ring.
     const drawAgent = (index: number, reveal: number, angle: number) => {
       const agent = orbitingAgents[index];
-      const depth = Math.sin(angle);
-      const scale = 0.85 + 0.15 * depth;
-      const x = width / 2 + Math.cos(angle) * agent.orbit * radius * reveal;
-      const y = height / 2 + Math.sin(angle) * agent.orbit * radius * tilt * reveal;
-      const badge = 17 * scale;
+      const { x, y } = onOrbit(agent.orbit * reveal, angle);
+      const badge = 17;
 
       context.save();
-      context.globalAlpha = clamp(reveal * 1.4) * (depth < 0 ? 0.55 + 0.45 * (1 + depth) : 1);
+      context.globalAlpha = clamp(reveal * 1.4);
       context.translate(x, y);
 
       context.fillStyle = palette.card;
@@ -257,7 +221,7 @@ export function GravityWell({ className }: GravityWellProps) {
         context.fill(icon);
       } else {
         context.fillStyle = color;
-        context.font = `600 ${Math.round(10 * scale)}px "Geist Mono", ui-monospace, monospace`;
+        context.font = `600 10px "Geist Mono", ui-monospace, monospace`;
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillText(">_", 0, 0.5);
@@ -275,19 +239,16 @@ export function GravityWell({ className }: GravityWellProps) {
         angles[index] += orbitSpeed(agent.orbit) * spin * delta;
       });
       const reveal = easeOutQuart(clamp((elapsed - agentStart) / agentRevealDuration));
+      const light = easeOutCubic(clamp((elapsed - lightStart) / lightDuration));
+
+      swirls = swirls.map((swirl) => (advanceSwirl(swirl, delta, spin) ? swirl : spawnSwirl(false)));
 
       context.clearRect(0, 0, width, height);
-      drawLines(elapsed);
-      drawStreaks(elapsed, delta);
+      drawGuides(light);
       drawOrbits(elapsed);
-
-      // The far half of every orbit passes behind the mark.
-      const far = orbitingAgents.map((_, index) => index).filter((index) => Math.sin(angles[index]) < 0);
-      const near = orbitingAgents.map((_, index) => index).filter((index) => Math.sin(angles[index]) >= 0);
-
-      if (reveal > 0) far.forEach((index) => drawAgent(index, reveal, angles[index]));
+      drawSwirls(light);
       drawMark(elapsed, now);
-      if (reveal > 0) near.forEach((index) => drawAgent(index, reveal, angles[index]));
+      if (reveal > 0) orbitingAgents.forEach((_, index) => drawAgent(index, reveal, angles[index]));
     };
 
     // The loop runs only while the canvas is on screen.
@@ -352,8 +313,8 @@ export function GravityWell({ className }: GravityWellProps) {
       ref={canvasRef}
       aria-hidden="true"
       className={cn("block size-full text-foreground", className)}
-      // The light fades out towards the edges, so the visual has no frame.
-      style={{ maskImage: "radial-gradient(ellipse 50% 50% at 50% 50%, black 62%, transparent 100%)" }}
+      // The edges fade out, so the visual has no frame.
+      style={{ maskImage: "radial-gradient(ellipse 50% 50% at 50% 50%, black 70%, transparent 100%)" }}
     />
   );
 }
