@@ -221,6 +221,45 @@ export function BlackHoleDivider({ className }: BlackHoleDividerProps) {
       context.globalAlpha = 1;
     };
 
+    // The arc over the hole: the disc's light bent around the shadow, a soft
+    // wide glow under a narrow bright band, flickering slightly.
+    const drawArc = () => {
+      const centerX = width / 2;
+      const flicker = 0.92 + 0.08 * Math.sin(performance.now() / 260);
+
+      const band = (outer: number, alpha: number) => {
+        const gradient = context.createRadialGradient(centerX, baseline, radius * 1.02, centerX, baseline, radius * outer);
+        gradient.addColorStop(0, ink);
+        gradient.addColorStop(1, "transparent");
+
+        context.globalAlpha = alpha * flicker;
+        context.fillStyle = gradient;
+        context.beginPath();
+        context.arc(centerX, baseline, radius * outer, Math.PI, 0);
+        context.closePath();
+        context.fill();
+      };
+
+      context.save();
+      if (dark) {
+        context.globalCompositeOperation = "lighter";
+        band(1.9, 0.35);
+        band(1.28, 0.9);
+      } else {
+        // On paper a glow turns grey, so the arc is drawn as a crisp line of
+        // ink with a gap from the shadow, over a faint halo.
+        band(1.7, 0.12);
+        context.globalAlpha = 0.85 * flicker;
+        context.strokeStyle = ink;
+        context.lineWidth = 2.2;
+        context.beginPath();
+        context.arc(centerX, baseline, radius * 1.13, Math.PI, 0);
+        context.stroke();
+      }
+      context.restore();
+      context.globalAlpha = 1;
+    };
+
     const drawHole = () => {
       const centerX = width / 2;
 
@@ -273,6 +312,7 @@ export function BlackHoleDivider({ className }: BlackHoleDividerProps) {
       context.clearRect(0, 0, width, height);
       drawLines();
       drawStreaks(delta);
+      drawArc();
       drawHole();
       drawDisc();
     };
