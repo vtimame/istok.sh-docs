@@ -8,6 +8,8 @@ export interface FeatureCopy {
 export interface LandingStrings {
   hero: {
     title: string[];
+    // The words in the title painted with the agents' gradient.
+    highlight: string;
     subtitle: string;
     copy: string;
     copied: string;
@@ -54,6 +56,7 @@ export const landing: Record<Locale, LandingStrings> = {
   en: {
     hero: {
       title: ["One", "workspace", "for every coding agent."],
+      highlight: "every coding agent",
       subtitle:
         "Keep tasks, context and progress with your project, not inside an agent session. See what every agent did, and how it proved it.",
       copy: "Copy install command",
@@ -144,6 +147,7 @@ export const landing: Record<Locale, LandingStrings> = {
   ru: {
     hero: {
       title: ["Одно", "пространство", "для всех агентов."],
+      highlight: "всех агентов",
       subtitle:
         "Следите за задачами, контекстом и ходом работы над проектом, а не за сессией агента. Смотрите, что сделал каждый агент и как он это доказал.",
       copy: "Скопировать команду установки",

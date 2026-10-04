@@ -201,3 +201,35 @@
     transform: none;
   }
 }
+
+/* The hero's key words in the colors of the agents it brings together, ending
+   in Istok's emerald; the gradient drifts slowly unless motion is reduced. */
+.text-agents {
+  --agents-gradient: #d97757, #b25bd9, #4285f4, #10b981, #d97757;
+  background-image: linear-gradient(90deg, var(--agents-gradient));
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+:root:not(.dark) .text-agents {
+  --agents-gradient: #c2410c, #9333ea, #2563eb, #059669, #c2410c;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .text-agents {
+    animation: agents-drift 10s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes agents-drift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: 100% 50%;
+  }
+}

@@ -7,6 +7,7 @@ const installCommand = "curl -fsSL https://get.istok.sh | sh";
 
 interface HeroTextProps {
   title: string[];
+  highlight: string;
   subtitle: string;
   copyLabel: string;
   copiedLabel: string;
@@ -14,7 +15,7 @@ interface HeroTextProps {
   docsHref: string;
 }
 
-export function HeroText({ title, subtitle, copyLabel, copiedLabel, docsLabel, docsHref }: HeroTextProps) {
+export function HeroText({ title, highlight, subtitle, copyLabel, copiedLabel, docsLabel, docsHref }: HeroTextProps) {
   const [visible, setVisible] = useState(false);
   const [copied, setCopied] = useState(false);
   const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -63,12 +64,18 @@ export function HeroText({ title, subtitle, copyLabel, copiedLabel, docsLabel, d
         `}
         style={{ transitionDelay: "100ms" }}
       >
-        {title.map((line, index) => (
-          <span key={line} className="block">
-            {line}
-            {index < title.length - 1 && " "}
-          </span>
-        ))}
+        {title.map((line, index) => {
+          const [before, after] = line.includes(highlight) ? line.split(highlight) : [line, null];
+
+          return (
+            <span key={line} className="block">
+              {before}
+              {after !== null && <span className="text-agents">{highlight}</span>}
+              {after}
+              {index < title.length - 1 && " "}
+            </span>
+          );
+        })}
       </h1>
 
       <div
