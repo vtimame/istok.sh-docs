@@ -10,12 +10,12 @@ import GetStartedSection from "./GetStartedSection.astro";
 import Hero from "./Hero.astro";
 import Showcase from "./Showcase.astro";
 import { HandoffVisual } from "./HandoffVisual";
-import { McpTrace } from "./McpTrace";
+import { AgentSession, type Session } from "./AgentSession";
 import { ThreadVisual } from "./ThreadVisual";
 
 import { homeHref, locales, type Locale } from "@/i18n";
 import { landing } from "@/i18n/landing";
-import { workflowSteps } from "./workflow-steps";
+import agentSession from "@/assets/terminal/agent-session.json";
 
 import taskLight from "@/assets/screenshots/task-light.webp";
 import taskDark from "@/assets/screenshots/task-dark.webp";
@@ -43,7 +43,7 @@ const alternateHref = homeHref(lang === "en" ? "ru" : "en");
     <Showcase strings={strings.showcase} />
 
     <FeatureSection title={strings.workflow.title} body={strings.workflow.body}>
-      <McpTrace client:visible agent="Claude Code" steps={workflowSteps} />
+      <AgentSession client:visible session={agentSession as Session} replayLabel={strings.workflow.replay} />
     </FeatureSection>
 
     <FeatureSection title={strings.history.title} body={strings.history.body} reverse>

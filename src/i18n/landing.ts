@@ -37,7 +37,7 @@ export interface LandingStrings {
       tasks: string;
     };
   };
-  workflow: FeatureCopy;
+  workflow: FeatureCopy & { replay: string };
   history: FeatureCopy & { alt: string };
   context: FeatureCopy & { alt: string };
   handoff: FeatureCopy & { facts: Fact[] };
@@ -87,6 +87,7 @@ export const landing: Record<Locale, LandingStrings> = {
     workflow: {
       title: ["Describe the problem.", "Istok keeps the work."],
       body: "No need to manage tasks by hand. Your agent creates the task, claims it, records progress and validates the result.",
+      replay: "Replay",
     },
     history: {
       title: ["See exactly", "what happened."],
@@ -188,6 +189,7 @@ export const landing: Record<Locale, LandingStrings> = {
     workflow: {
       title: ["Опишите задачу.", "Istok сохранит работу."],
       body: "Не нужно вести задачи руками. Агент сам создаёт задачу, берёт её в работу, записывает прогресс и проверяет результат.",
+      replay: "Повторить",
     },
     history: {
       title: ["Видно всё,", "что произошло."],

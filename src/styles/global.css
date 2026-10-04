@@ -57,7 +57,7 @@
 
 :root {
   /* Light theme: warm paper and coffee ink instead of pure white and grey. */
-  --background: color-mix(in oklab, oklch(98.7% 0.022 95.277) 30%, white); /* amber-50 at 30% */
+  --background: color-mix(in oklab, oklch(98.7% 0.022 95.277) 10%, white); /* amber-50 at 10% */
   --foreground: #2d2924;
   --card: #ffffff;
   --card-foreground: #2d2924;
@@ -89,9 +89,25 @@
   --sidebar-accent-foreground: #2d2924;
   --sidebar-border: #ece6d8;
   --sidebar-ring: #bfb3a2;
+
+  /* Terminal colors: the CLI's own palette in the dark theme, darker shades of
+     the same hues in the light one. */
+  --term-cyan: #0369a1;
+  --term-yellow: #b45309;
+  --term-green: #15803d;
+  --term-gray: #6b7280;
+  --term-red: #be123c;
+  --term-violet: #6d28d9;
 }
 
 .dark {
+  --term-cyan: rgb(92 200 255);
+  --term-yellow: rgb(242 184 75);
+  --term-green: rgb(95 211 141);
+  --term-gray: rgb(124 132 148);
+  --term-red: rgb(255 107 122);
+  --term-violet: rgb(183 165 255);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

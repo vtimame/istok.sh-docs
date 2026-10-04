@@ -1,0 +1,125 @@
+{
+  "cwd": "~/work/acme-api",
+  "prompt": "Reject orders with a zero or negative amount.",
+  "task_number": 22,
+  "steps": [
+    {
+      "kind": "istok",
+      "name": "task_create",
+      "summary": "\"Reject orders with a non-positive amount\"",
+      "output": [
+        {
+          "text": "task #22 · open"
+        }
+      ]
+    },
+    {
+      "kind": "istok",
+      "name": "task_claim",
+      "summary": "#22",
+      "output": [
+        {
+          "text": "run started"
+        },
+        {
+          "text": "context: 3 project rules, 4 code snippets from 4 files, 1 knowledge note",
+          "tone": "muted"
+        }
+      ]
+    },
+    {
+      "kind": "tool",
+      "name": "Read",
+      "summary": "internal/orders/service.go",
+      "output": [
+        {
+          "text": "Read 58 lines",
+          "tone": "muted"
+        }
+      ]
+    },
+    {
+      "kind": "tool",
+      "name": "Update",
+      "summary": "internal/orders/service.go",
+      "output": [
+        {
+          "text": "+ // ErrInvalidAmount is returned for orders that would charge nothing.",
+          "tone": "added"
+        },
+        {
+          "text": "+ var ErrInvalidAmount = errors.New(\"order amount must be positive\")",
+          "tone": "added"
+        },
+        {
+          "text": "+   if order.AmountMinor \u003c= 0 {",
+          "tone": "added"
+        },
+        {
+          "text": "+     return Order{}, ErrInvalidAmount",
+          "tone": "added"
+        },
+        {
+          "text": "+   }",
+          "tone": "added"
+        }
+      ]
+    },
+    {
+      "kind": "tool",
+      "name": "Write",
+      "summary": "internal/orders/service_test.go",
+      "output": [
+        {
+          "text": "Wrote 44 lines",
+          "tone": "muted"
+        }
+      ]
+    },
+    {
+      "kind": "istok",
+      "name": "run_validate",
+      "summary": "go test ./...",
+      "output": [
+        {
+          "text": "?     example.com/acme-api/internal/httpapi  [no test files]"
+        },
+        {
+          "text": "ok    example.com/acme-api/internal/orders  0.001s"
+        },
+        {
+          "text": "?     example.com/acme-api/internal/payments  [no test files]"
+        },
+        {
+          "text": "validation passed · exit 0 · 4.6s",
+          "tone": "success"
+        }
+      ]
+    },
+    {
+      "kind": "istok",
+      "name": "run_finish",
+      "summary": "succeeded",
+      "output": [
+        {
+          "text": "run succeeded"
+        }
+      ]
+    },
+    {
+      "kind": "istok",
+      "name": "task_complete",
+      "summary": "#22",
+      "output": [
+        {
+          "text": "task #22 · done",
+          "tone": "success"
+        }
+      ]
+    },
+    {
+      "kind": "message",
+      "text": "Done. Orders with a zero or negative amount are now rejected before any charge, and go test passes. Everything is recorded in Istok as task #22: open istok ui or run istok task show 22."
+    }
+  ]
+}

@@ -10,27 +10,39 @@ interface Props {
 
 const { ansi, title = "~/work/acme-api", class: className } = Astro.props;
 
+// The CLI's truecolor palette becomes theme tokens, so the same output reads
+// on a light and a dark terminal.
+const palette: Record<string, string> = {
+  "92,200,255": "--term-cyan",
+  "242,184,75": "--term-yellow",
+  "95,211,141": "--term-green",
+  "124,132,148": "--term-gray",
+  "255,107,122": "--term-red",
+  "183,165,255": "--term-violet",
+};
+
 // Status glyphs fall back to a wider font than Geist Mono; pin them to one
 // column so the CLI tables stay aligned as they are in a real terminal.
 const html = new AnsiUp()
   .ansi_to_html(ansi.trimEnd())
+  .replace(/color:rgb\((\d+,\d+,\d+)\)/g, (match, rgb: string) => (palette[rgb] ? `color:var(${palette[rgb]})` : match))
   .replace(/[✓◐◆●×│—]/g, (glyph) => `<span class="inline-block w-[1ch] text-center">${glyph}</span>`);
 ---
 
 <figure
   class:list={[
-    "dark overflow-hidden rounded-xl border border-white/10 bg-[#161616] text-neutral-200 shadow-2xl shadow-black/10 dark:shadow-black/40",
+    "overflow-hidden rounded-xl border border-border bg-card text-foreground shadow-2xl shadow-black/10 dark:shadow-black/40",
     className,
   ]}
 >
-  <div class="relative flex h-8 items-center border-b border-white/10 px-3 sm:h-9">
+  <div class="relative flex h-8 items-center border-b border-border/70 px-3 sm:h-9">
     <div class="flex gap-1.5" aria-hidden="true">
-      <span class="size-2.5 rounded-full bg-white/15"></span>
-      <span class="size-2.5 rounded-full bg-white/15"></span>
-      <span class="size-2.5 rounded-full bg-white/15"></span>
+      <span class="size-2.5 rounded-full bg-foreground/15"></span>
+      <span class="size-2.5 rounded-full bg-foreground/15"></span>
+      <span class="size-2.5 rounded-full bg-foreground/15"></span>
     </div>
 
-    <div class="absolute left-1/2 hidden -translate-x-1/2 font-mono text-[11px] text-neutral-400 sm:block">
+    <div class="absolute left-1/2 hidden -translate-x-1/2 font-mono text-[11px] text-muted-foreground sm:block">
       {title}
     </div>
   </div>
