@@ -1,25 +1,36 @@
 ---
-// A scratch page for the black hole divider. Not linked from the site.
+// A scratch page for a hero built around the Istok mark as a black hole. Not
+// linked from the site.
 import Header from "@/components/layout/Header";
 import EmptyLayout from "@/layouts/EmptyLayout.astro";
-import { BlackHoleDivider } from "@/components/landing/BlackHoleDivider";
+import { BlackHole } from "@/components/landing/blackhole/BlackHole";
 ---
 
-<EmptyLayout title="Divider lab — Istok">
-  <Header client:load lang="en" />
+<EmptyLayout title="Hero lab — Istok">
+  <Header client:load lang="ru" />
 
-  <main class="pt-14">
-    <section class="app-container flex h-[420px] items-center">
-      <h1 class="font-heading text-5xl font-bold tracking-[-0.035em]">Hero above the divider.</h1>
+  <main>
+    <section class="relative flex min-h-dvh flex-col pt-14">
+      <div class="app-container relative z-10 pt-16 text-center sm:pt-24">
+        <h1 class="font-heading text-5xl font-bold leading-[1.02] tracking-[-0.035em] sm:text-6xl">
+          Одно пространство<br />для всех агентов.
+        </h1>
+        <p class="mx-auto mt-6 max-w-xl text-muted-foreground">
+          Следите за задачами, контекстом и ходом работы над проектом, а не за сессией агента.
+        </p>
+      </div>
+
+      <BlackHole client:only="react" className="mt-auto h-[52vh] min-h-[340px]" baseline={0.86} />
     </section>
 
-    <BlackHoleDivider client:only="react" />
-
     <section class="app-container py-24">
-      <h2 class="font-heading text-4xl font-bold tracking-[-0.03em]">The page continues below.</h2>
-      <p class="mt-6 max-w-xl text-muted-foreground">
-        The disc line separates the hero from the content; the lower half of the black hole stays hidden behind it.
-      </p>
+      <h2 class="font-heading text-4xl font-bold tracking-[-0.03em]">Дальше идёт страница.</h2>
+      <p class="mt-6 max-w-xl text-muted-foreground">Линия диска отделяет hero от содержимого.</p>
+    </section>
+
+    <section class="pb-24">
+      <p class="app-container mb-4 font-mono text-xs text-muted-foreground">mono, для сравнения</p>
+      <BlackHole client:only="react" tone="mono" className="h-[360px]" />
     </section>
   </main>
 </EmptyLayout>
