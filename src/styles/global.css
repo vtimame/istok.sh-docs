@@ -266,3 +266,18 @@ nav {
 .docs-code:hover > button {
   opacity: 1;
 }
+
+/* The hero text rises in with CSS alone, so it shows even before (or without)
+   the page's JavaScript. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-rise {
+    animation: hero-rise 0.7s ease-out var(--rise-delay, 0ms) both;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
