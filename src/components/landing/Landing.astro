@@ -8,7 +8,6 @@ import CtaSection from "./CtaSection.astro";
 import FeatureSection from "./FeatureSection.astro";
 import GetStartedSection from "./GetStartedSection.astro";
 import Hero from "./Hero.astro";
-import ProblemSection from "./ProblemSection.astro";
 import Showcase from "./Showcase.astro";
 import { HandoffVisual } from "./HandoffVisual";
 import { McpTrace } from "./McpTrace";
@@ -42,7 +41,6 @@ const alternateHref = homeHref(lang === "en" ? "ru" : "en");
   <main>
     <Hero lang={lang} strings={strings.hero} />
     <Showcase strings={strings.showcase} />
-    <ProblemSection strings={strings.problem} />
 
     <FeatureSection title={strings.workflow.title} body={strings.workflow.body}>
       <McpTrace client:visible agent="Claude Code" steps={workflowSteps} />

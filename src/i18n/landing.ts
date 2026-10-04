@@ -37,10 +37,6 @@ export interface LandingStrings {
       tasks: string;
     };
   };
-  problem: {
-    title: string[];
-    items: { title: string; body: string }[];
-  };
   workflow: FeatureCopy;
   history: FeatureCopy & { alt: string };
   context: FeatureCopy & { alt: string };
@@ -87,23 +83,6 @@ export const landing: Record<Locale, LandingStrings> = {
         runs: "Run feed: active, succeeded, stale and failed runs by Claude and Codex across projects",
         tasks: "Task list of the acme-api project with statuses and an agent working on task 20",
       },
-    },
-    problem: {
-      title: ["Agent sessions end.", "The work shouldn't."],
-      items: [
-        {
-          title: "Context disappears",
-          body: "A new session starts from zero. Decisions, failed attempts and half-done work stay behind in an old chat.",
-        },
-        {
-          title: "Work is invisible",
-          body: "With several agents across several repositories, it is hard to tell who is doing what, and what quietly stalled.",
-        },
-        {
-          title: "“Done” is just a claim",
-          body: "An agent says the tests pass. Without a record of the commands it ran, you can only take its word for it.",
-        },
-      ],
     },
     workflow: {
       title: ["Describe the problem.", "Istok keeps the work."],
@@ -205,23 +184,6 @@ export const landing: Record<Locale, LandingStrings> = {
         runs: "Лента запусков: активные, успешные, зависшие и неудачные запуски Claude и Codex во всех проектах",
         tasks: "Список задач проекта acme-api со статусами и агентом, работающим над задачей 20",
       },
-    },
-    problem: {
-      title: ["Сессия агента кончается.", "Работа — нет."],
-      items: [
-        {
-          title: "Контекст теряется",
-          body: "Новая сессия начинается с нуля. Решения, неудачные попытки и недоделанная работа остаются в старом чате.",
-        },
-        {
-          title: "Работы не видно",
-          body: "Когда несколько агентов работают в нескольких репозиториях, непонятно, кто чем занят и что тихо зависло.",
-        },
-        {
-          title: "«Готово» — это только слова",
-          body: "Агент говорит, что тесты прошли. Без записи запущенных команд остаётся верить ему на слово.",
-        },
-      ],
     },
     workflow: {
       title: ["Опишите задачу.", "Istok сохранит работу."],
