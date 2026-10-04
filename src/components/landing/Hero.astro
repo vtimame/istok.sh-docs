@@ -1,5 +1,5 @@
 ---
-import { HeroOrbit } from "./HeroOrbit";
+import { GravityWell } from "./well/GravityWell";
 import { HeroText } from "./HeroText";
 
 import { docsHref, type Locale } from "@/i18n";
@@ -44,8 +44,8 @@ const { lang, strings } = Astro.props;
       2xl:max-w-[560px]
     "
   >
-    <slot name="visual">
-      <HeroOrbit client:load size={960} />
-    </slot>
+    <div class="mx-auto aspect-square w-full max-w-[640px]">
+      <GravityWell client:only="react" />
+    </div>
   </div>
 </section>

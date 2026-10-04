@@ -72,7 +72,7 @@ export function GravityWell({ className }: GravityWellProps) {
     let height = 0;
     let radius = 0;
     let swirls: Swirl[] = Array.from({ length: swirlCount }, () => spawnSwirl(true));
-    let palette: Palette = readPalette(canvas, "brand");
+    let palette: Palette = readPalette(canvas);
 
     let introAt: number | null = reducedMotion ? -Infinity : null;
     const angles = orbitingAgents.map((agent) => agent.phase);
@@ -295,7 +295,7 @@ export function GravityWell({ className }: GravityWellProps) {
     visibilityObserver.observe(canvas);
 
     const themeObserver = new MutationObserver(() => {
-      palette = readPalette(canvas, "brand");
+      palette = readPalette(canvas);
       draw(performance.now(), 0);
     });
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });

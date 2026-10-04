@@ -100,7 +100,7 @@ const segment =
         </div>
       </div>
 
-      <div class="mt-6 grid">
+      <div class="mt-6 grid grid-cols-[minmax(0,1fr)]">
         {
           views.map((view, index) => (
             <div
@@ -108,9 +108,9 @@ const segment =
               id={`showcase-panel-${view.id}`}
               aria-labelledby={`showcase-tab-${view.id}`}
               data-active={index === 0 ? "true" : "false"}
-              class="grid [grid-area:1/1] transition-opacity duration-500 data-[active=false]:pointer-events-none data-[active=false]:invisible data-[active=false]:opacity-0"
+              class="grid min-w-0 grid-cols-[minmax(0,1fr)] [grid-area:1/1] transition-opacity duration-500 data-[active=false]:pointer-events-none data-[active=false]:invisible data-[active=false]:opacity-0"
             >
-              <div data-medium-view="browser" class="[grid-area:1/1] transition-opacity duration-300">
+              <div data-medium-view="browser" class="min-w-0 [grid-area:1/1] transition-opacity duration-300">
                 <BrowserFrame
                   light={view.light}
                   dark={view.dark}
@@ -121,7 +121,7 @@ const segment =
                 />
               </div>
 
-              <div data-medium-view="terminal" class="[grid-area:1/1] transition-opacity duration-300">
+              <div data-medium-view="terminal" class="min-w-0 [grid-area:1/1] transition-opacity duration-300">
                 <TerminalFrame ansi={view.terminal} title={view.cwd} />
               </div>
             </div>
