@@ -17,6 +17,7 @@ export interface DocsNavigationGroup {
 const groupTitles: Record<string, Record<string, string>> = {
   en: {
     "getting-started": "Getting started",
+    guides: "Guides",
     "how-istok-works": "How Istok works",
     reference: "Reference",
     help: "Help",
@@ -24,6 +25,10 @@ const groupTitles: Record<string, Record<string, string>> = {
 
   ru: {
     "getting-started": "Начало работы",
+    guides: "Руководства",
+    "how-istok-works": "Как устроен Istok",
+    reference: "Справочник",
+    help: "Помощь",
   },
 };
 
