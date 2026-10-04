@@ -104,7 +104,7 @@ export const landing: Record<Locale, LandingStrings> = {
       alt: "What the agent saw: context budget, three context records and retrieved code with syntax highlighting",
     },
     evidence: {
-      title: ["Done == proven."],
+      title: ["Done means", "verified."],
       body: "Agents record every check: the command, exit code and time. A task closes with proof.",
       alt: "Run page: three passed validations with go test, go test -race and go vet",
     },
@@ -200,7 +200,7 @@ export const landing: Record<Locale, LandingStrings> = {
       alt: "Что получил агент: бюджет контекста, три записи контекста и найденный код с подсветкой синтаксиса",
     },
     evidence: {
-      title: ["Готово == доказано."],
+      title: ["Готово —", "значит проверено."],
       body: "Агенты записывают каждую проверку: команду, код выхода и время. Задача закрывается с подтверждением.",
       alt: "Страница запуска: три успешные проверки go test, go test -race и go vet",
     },
