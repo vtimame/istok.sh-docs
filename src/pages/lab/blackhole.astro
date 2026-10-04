@@ -1,0 +1,41 @@
+---
+// A scratch page for the black hole divider. Not linked, marked noindex.
+import Header from "@/components/layout/Header";
+import EmptyLayout from "@/layouts/EmptyLayout.astro";
+import { BlackHole } from "@/components/landing/blackhole/BlackHole";
+---
+
+<EmptyLayout title="Black hole lab — Istok" noindex>
+  <Header client:load lang="en" />
+
+  <main class="pt-20 pb-24">
+    <div class="app-container">
+      <h1 class="font-heading text-2xl font-bold">Black hole</h1>
+      <p class="mt-2 font-mono text-xs text-muted-foreground">auto: light in the dark theme, ink in the light theme</p>
+    </div>
+
+    <!-- As a full-width divider, faded into the page at the edges. -->
+    <div
+      class="mt-8 h-[520px] w-full"
+      style="mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, black 55%, transparent 100%);"
+    >
+      <BlackHole client:only="react" />
+    </div>
+
+    <div class="app-container mt-12 grid gap-10 md:grid-cols-2">
+      <div>
+        <p class="mb-3 font-mono text-xs text-muted-foreground">light, forced</p>
+        <div class="h-[360px] overflow-hidden rounded-xl border border-border">
+          <BlackHole client:only="react" mode="light" />
+        </div>
+      </div>
+
+      <div>
+        <p class="mb-3 font-mono text-xs text-muted-foreground">ink, forced</p>
+        <div class="h-[360px] overflow-hidden rounded-xl border border-border">
+          <BlackHole client:only="react" mode="ink" />
+        </div>
+      </div>
+    </div>
+  </main>
+</EmptyLayout>
