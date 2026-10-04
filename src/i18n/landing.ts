@@ -19,7 +19,6 @@ export interface LandingStrings {
     docs: string;
   };
   showcase: {
-    eyebrow: string;
     title: string[];
     body: string;
     tabs: {
@@ -36,7 +35,6 @@ export interface LandingStrings {
     };
   };
   problem: {
-    eyebrow: string;
     title: string[];
     items: { title: string; body: string }[];
   };
@@ -47,13 +45,11 @@ export interface LandingStrings {
   evidence: FeatureCopy & { alt: string };
   local: FeatureCopy & { facts: Fact[] };
   start: {
-    eyebrow: string;
     title: string[];
-    steps: { title: string; body: string; code: string }[];
+    steps: { title: string; body: string; code: string; prompt?: boolean }[];
     more: string;
   };
   cta: {
-    eyebrow: string;
     title: string[];
     body: string;
     button: string;
@@ -71,7 +67,6 @@ export const landing: Record<Locale, LandingStrings> = {
       docs: "Read documentation",
     },
     showcase: {
-      eyebrow: "Web UI",
       title: ["See what your agents", "are working on."],
       body: "opens a local dashboard for every project, task and run. It updates live as agents write, and never leaves your machine.",
       tabs: {
@@ -88,7 +83,6 @@ export const landing: Record<Locale, LandingStrings> = {
       },
     },
     problem: {
-      eyebrow: "Why Istok",
       title: ["Agent sessions end.", "The work shouldn't."],
       items: [
         {
@@ -145,7 +139,6 @@ export const landing: Record<Locale, LandingStrings> = {
       ],
     },
     start: {
-      eyebrow: "Get started",
       title: ["Up and running", "in a minute."],
       steps: [
         {
@@ -154,14 +147,15 @@ export const landing: Record<Locale, LandingStrings> = {
           code: "curl -fsSL https://get.istok.sh | sh",
         },
         {
-          title: "Initialize your project",
-          body: "Run once in the repository. Nothing is written into it.",
-          code: "cd my-project\nistok init",
+          title: "Connect your agent",
+          body: "Once per machine. Claude Code shown here; Codex, Cursor and any MCP client work too.",
+          code: "claude mcp add --scope user istok -- \\\n  istok mcp --actor-id claude --actor-name \"Claude Code\"",
         },
         {
-          title: "Connect your agent",
-          body: "Claude Code shown here; Codex, Cursor and any MCP client work too.",
-          code: "claude mcp add --scope user istok -- \\\n  istok mcp --actor-id claude --actor-name \"Claude Code\"",
+          title: "Register your project",
+          body: "Open the agent in your repository and ask. It registers the project through MCP; nothing is written into the repository.",
+          code: "Register this project in Istok.",
+          prompt: true,
         },
         {
           title: "Open the UI",
@@ -172,7 +166,6 @@ export const landing: Record<Locale, LandingStrings> = {
       more: "Full quick start",
     },
     cta: {
-      eyebrow: "Start with Istok",
       title: ["Give your agents", "a shared project memory."],
       body: "Set up your project, connect your coding agents through MCP and let Istok keep the work between sessions.",
       button: "Quick start",
@@ -189,7 +182,6 @@ export const landing: Record<Locale, LandingStrings> = {
       docs: "Документация",
     },
     showcase: {
-      eyebrow: "Веб-интерфейс",
       title: ["Видно, чем заняты", "ваши агенты."],
       body: "открывает локальную панель со всеми проектами, задачами и запусками. Она обновляется вживую, пока агенты работают, и не покидает ваш компьютер.",
       tabs: {
@@ -206,7 +198,6 @@ export const landing: Record<Locale, LandingStrings> = {
       },
     },
     problem: {
-      eyebrow: "Зачем Istok",
       title: ["Сессия агента кончается.", "Работа — нет."],
       items: [
         {
@@ -263,7 +254,6 @@ export const landing: Record<Locale, LandingStrings> = {
       ],
     },
     start: {
-      eyebrow: "Начало работы",
       title: ["Готово к работе", "за минуту."],
       steps: [
         {
@@ -272,14 +262,15 @@ export const landing: Record<Locale, LandingStrings> = {
           code: "curl -fsSL https://get.istok.sh | sh",
         },
         {
-          title: "Инициализируйте проект",
-          body: "Один раз в репозитории. В сам репозиторий ничего не записывается.",
-          code: "cd my-project\nistok init",
+          title: "Подключите агента",
+          body: "Один раз на компьютер. Пример для Claude Code; Codex, Cursor и любой MCP-клиент тоже подходят.",
+          code: "claude mcp add --scope user istok -- \\\n  istok mcp --actor-id claude --actor-name \"Claude Code\"",
         },
         {
-          title: "Подключите агента",
-          body: "Пример для Claude Code; Codex, Cursor и любой MCP-клиент тоже подходят.",
-          code: "claude mcp add --scope user istok -- \\\n  istok mcp --actor-id claude --actor-name \"Claude Code\"",
+          title: "Зарегистрируйте проект",
+          body: "Откройте агента в репозитории и попросите. Он зарегистрирует проект через MCP, в сам репозиторий ничего не записывается.",
+          code: "Зарегистрируй этот проект в Istok.",
+          prompt: true,
         },
         {
           title: "Откройте интерфейс",
@@ -290,7 +281,6 @@ export const landing: Record<Locale, LandingStrings> = {
       more: "Подробный быстрый старт",
     },
     cta: {
-      eyebrow: "Начните с Istok",
       title: ["Дайте агентам", "общую память проекта."],
       body: "Подготовьте проект, подключите агентов через MCP, и Istok сохранит работу между сессиями.",
       button: "Быстрый старт",

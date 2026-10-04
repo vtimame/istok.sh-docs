@@ -1,23 +1,14 @@
 ---
 interface Props {
   lines: string[];
-  eyebrow?: string;
   size?: "md" | "lg";
   class?: string;
 }
 
-const { lines, eyebrow, size = "md", class: className } = Astro.props;
+const { lines, size = "md", class: className } = Astro.props;
 ---
 
 <div class={className}>
-  {
-    eyebrow && (
-      <div class="mb-5 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-600 dark:text-emerald-500">
-        {eyebrow}
-      </div>
-    )
-  }
-
   <h2
     class:list={[
       "font-cormorant font-normal italic tracking-[-0.03em]",

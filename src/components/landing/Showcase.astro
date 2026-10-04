@@ -30,7 +30,7 @@ const views = [
 <section class="border-t border-border/60 py-24 sm:py-28 lg:py-32">
   <div class="app-container">
     <div class="mx-auto max-w-2xl text-center" data-reveal>
-      <SectionTitle lines={strings.title} eyebrow={strings.eyebrow} />
+      <SectionTitle lines={strings.title} />
 
       <p class="mx-auto mt-7 max-w-xl leading-relaxed text-muted-foreground">
         <code class="rounded bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground">istok ui</code>
@@ -41,7 +41,7 @@ const views = [
     <div class="mt-12" data-showcase data-reveal>
       <div
         role="tablist"
-        aria-label={strings.eyebrow}
+        aria-label={strings.title.join(" ")}
         class="mx-auto flex w-fit gap-1 rounded-lg bg-muted p-1"
       >
         {
