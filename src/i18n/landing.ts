@@ -101,7 +101,7 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     context: {
       title: ["Start with context,", "not from zero."],
-      body: "When an agent claims a task, Istok gives it the project's rules, past decisions and the relevant code, within a fixed budget. The run keeps a copy, so you can see exactly what the agent saw.",
+      body: "When an agent claims a task, it gets the relevant code, rules and decisions right away. Istok keeps a copy, so you can always see what the agent started with.",
       alt: "What the agent saw: context budget, three context records and retrieved code with syntax highlighting",
     },
     handoff: {
@@ -207,7 +207,7 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     context: {
       title: ["Начинайте с контекста,", "а не с нуля."],
-      body: "Когда агент берёт задачу, Istok выдаёт ему правила проекта, прошлые решения и нужный код в пределах заданного бюджета. Запуск сохраняет копию, поэтому видно, что именно получил агент.",
+      body: "Взяв задачу, агент сразу получает нужный код, правила и решения проекта. Istok сохраняет копию, так что всегда видно, с чем агент начинал.",
       alt: "Что получил агент: бюджет контекста, три записи контекста и найденный код с подсветкой синтаксиса",
     },
     handoff: {
