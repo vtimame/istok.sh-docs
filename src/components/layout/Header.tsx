@@ -67,10 +67,10 @@ export default function Header({ lang, alternateHref, docs }: HeaderProps) {
         <nav className="ml-auto flex items-center gap-x-1">
           {docs && (
             <>
-              <DocsSearchDialog groups={docs.groups} />
+              <DocsSearchDialog groups={docs.groups} strings={ui[lang].docs} />
 
               <div className="lg:hidden">
-                <DocsMobileNav groups={docs.groups} pathname={docs.pathname} />
+                <DocsMobileNav groups={docs.groups} strings={ui[lang].docs} pathname={docs.pathname} />
               </div>
             </>
           )}

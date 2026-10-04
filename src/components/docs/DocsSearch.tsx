@@ -1,7 +1,9 @@
+import type { DocsStrings } from "@/i18n/ui";
 import { useEffect, useState } from "react";
 import { LoaderCircleIcon, SearchIcon, XIcon } from "lucide-react";
 
 interface DocsSearchProps {
+  strings: DocsStrings;
   onNavigate?: () => void;
 }
 
@@ -52,7 +54,7 @@ function loadPagefind(): Promise<PagefindModule> {
   return pagefindPromise;
 }
 
-export function DocsSearch({ onNavigate }: DocsSearchProps) {
+export function DocsSearch({ strings, onNavigate }: DocsSearchProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PagefindResultData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -134,8 +136,8 @@ export function DocsSearch({ onNavigate }: DocsSearchProps) {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           onFocus={preloadPagefind}
-          placeholder="Search documentation..."
-          aria-label="Search documentation"
+          placeholder={strings.searchPlaceholder}
+          aria-label={strings.searchLabel}
           autoComplete="off"
           className="
             h-9 w-full rounded-lg border border-input
@@ -181,11 +183,10 @@ export function DocsSearch({ onNavigate }: DocsSearchProps) {
         <div className="mt-4">
           {failed ? (
             <p className="px-2 py-3 text-sm text-muted-foreground">
-              Search is unavailable in development. Run a production build to generate the search
-              index.
+              {strings.searchUnavailable}
             </p>
           ) : !loading && results.length === 0 ? (
-            <p className="px-2 py-3 text-sm text-muted-foreground">No results found.</p>
+            <p className="px-2 py-3 text-sm text-muted-foreground">{strings.noResults}</p>
           ) : (
             <div className="space-y-1">
               {results.map((result) => (

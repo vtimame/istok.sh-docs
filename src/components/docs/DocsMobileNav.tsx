@@ -1,3 +1,4 @@
+import type { DocsStrings } from "@/i18n/ui";
 import { useState } from "react";
 import { MenuIcon } from "lucide-react";
 
@@ -12,10 +13,11 @@ import type { DocsNavigationGroup } from "@/lib/docs/navigation";
 
 interface DocsMobileNavProps {
   groups: DocsNavigationGroup[];
+  strings: DocsStrings;
   pathname: string;
 }
 
-export function DocsMobileNav({ groups, pathname }: DocsMobileNavProps) {
+export function DocsMobileNav({ groups, strings, pathname }: DocsMobileNavProps) {
   const [open, setOpen] = useState(false);
 
   const close = () => {
@@ -27,7 +29,7 @@ export function DocsMobileNav({ groups, pathname }: DocsMobileNavProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Open documentation navigation"
+        aria-label={strings.openNavigation}
         className={cn(
           buttonVariants({
             variant: "ghost",
@@ -55,7 +57,7 @@ export function DocsMobileNav({ groups, pathname }: DocsMobileNavProps) {
           </SheetHeader>
 
           <div className="shrink-0 border-b border-border/60 p-4">
-            <DocsSearch onNavigate={close} />
+            <DocsSearch strings={strings} onNavigate={close} />
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6">

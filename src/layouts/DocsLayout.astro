@@ -12,6 +12,7 @@ import {
 
 import { createDocsNavigation } from "@/lib/docs/navigation";
 import { docsHref, isLocale, locales } from "@/i18n";
+import { ui } from "@/i18n/ui";
 
 interface Heading {
   depth: number;
@@ -148,6 +149,7 @@ const alternateHref = alternates[otherLocale] ?? docsHref(otherLocale, "getting-
       <DocsToc
         client:load
         headings={headings}
+        title={ui[locale].docs.onThisPage}
       />
     </div>
   </div>

@@ -9,9 +9,10 @@ interface Heading {
 
 interface Props {
   headings: Heading[];
+  title: string;
 }
 
-export function DocsToc({ headings }: Props) {
+export function DocsToc({ headings, title }: Props) {
   const items = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 
   const [activeId, setActiveId] = useState<string | null>(items[0]?.slug ?? null);
@@ -54,7 +55,7 @@ export function DocsToc({ headings }: Props) {
   return (
     <aside className="hidden xl:block">
       <div className="sticky top-14 py-8 pl-8">
-        <div className="mb-4 text-xs font-medium text-muted-foreground">On this page</div>
+        <div className="mb-4 text-xs font-medium text-muted-foreground">{title}</div>
 
         <nav className="relative border-l border-border">
           {items.map((heading) => {

@@ -1,3 +1,4 @@
+import type { DocsStrings } from "@/i18n/ui";
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 
 import { ArrowRightIcon, CornerDownLeftIcon, LoaderCircleIcon, SearchIcon } from "lucide-react";
@@ -12,6 +13,7 @@ import type { DocsNavigationGroup, DocsNavigationItem } from "@/lib/docs/navigat
 
 interface DocsSearchDialogProps {
   groups: DocsNavigationGroup[];
+  strings: DocsStrings;
   className?: string;
 }
 
@@ -21,7 +23,7 @@ interface SearchItem {
   excerpt?: string;
 }
 
-export function DocsSearchDialog({ groups, className }: DocsSearchDialogProps) {
+export function DocsSearchDialog({ groups, strings, className }: DocsSearchDialogProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<DocsSearchResult[]>([]);
@@ -213,7 +215,7 @@ export function DocsSearchDialog({ groups, className }: DocsSearchDialogProps) {
       >
         <SearchIcon className="size-3.5 shrink-0" />
 
-        <span className="truncate">Search docs...</span>
+        <span className="truncate">{strings.searchButton}</span>
 
         <kbd
           className="
@@ -247,7 +249,7 @@ export function DocsSearchDialog({ groups, className }: DocsSearchDialogProps) {
             sm:max-w-xl
           "
         >
-          <DialogTitle className="sr-only">Search documentation</DialogTitle>
+          <DialogTitle className="sr-only">{strings.searchLabel}</DialogTitle>
 
           <div className="flex h-12 items-center border-b border-border/60 px-4">
             <SearchIcon
@@ -265,7 +267,7 @@ export function DocsSearchDialog({ groups, className }: DocsSearchDialogProps) {
                 setActiveIndex(0);
               }}
               onKeyDown={handleInputKeyDown}
-              placeholder="Search documentation..."
+              placeholder={strings.searchPlaceholder}
               autoComplete="off"
               spellCheck={false}
               className="
@@ -291,12 +293,11 @@ export function DocsSearchDialog({ groups, className }: DocsSearchDialogProps) {
           <div className="max-h-[420px] min-h-48 overflow-y-auto p-2">
             {failed ? (
               <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                Search is unavailable in development. Run a production build to generate the
-                Pagefind index.
+                {strings.searchUnavailable}
               </div>
             ) : normalizedQuery.length >= 2 && !loading && items.length === 0 ? (
               <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-                No results found.
+                {strings.noResults}
               </div>
             ) : (
               <>
@@ -307,7 +308,7 @@ export function DocsSearchDialog({ groups, className }: DocsSearchDialogProps) {
                     text-muted-foreground
                   "
                 >
-                  {normalizedQuery.length >= 2 ? "Search results" : "Pages"}
+                  {normalizedQuery.length >= 2 ? strings.results : strings.pages}
                 </div>
 
                 <div>
