@@ -1,0 +1,41 @@
+---
+import { AnsiUp } from "ansi_up";
+
+interface Props {
+  // Raw terminal output with ANSI colors, captured from the real CLI.
+  ansi: string;
+  title?: string;
+  class?: string;
+}
+
+const { ansi, title = "~/work/acme-api", class: className } = Astro.props;
+
+// Status glyphs fall back to a wider font than Geist Mono; pin them to one
+// column so the CLI tables stay aligned as they are in a real terminal.
+const html = new AnsiUp()
+  .ansi_to_html(ansi.trimEnd())
+  .replace(/[✓◐◆●×│—]/g, (glyph) => `<span class="inline-block w-[1ch] text-center">${glyph}</span>`);
+---
+
+<figure
+  class:list={[
+    "dark overflow-hidden rounded-xl border border-white/10 bg-[#161616] text-neutral-200 shadow-2xl shadow-black/10 dark:shadow-black/40",
+    className,
+  ]}
+>
+  <div class="relative flex h-8 items-center border-b border-white/10 px-3 sm:h-9">
+    <div class="flex gap-1.5" aria-hidden="true">
+      <span class="size-2.5 rounded-full bg-white/15"></span>
+      <span class="size-2.5 rounded-full bg-white/15"></span>
+      <span class="size-2.5 rounded-full bg-white/15"></span>
+    </div>
+
+    <div class="absolute left-1/2 hidden -translate-x-1/2 font-mono text-[11px] text-neutral-400 sm:block">
+      {title}
+    </div>
+  </div>
+
+  <div class="aspect-[16/10] overflow-auto">
+    <pre class="px-5 py-4 font-mono text-[11px] leading-[1.6] sm:text-[13px] lg:text-[14px]" set:html={html} />
+  </div>
+</figure>

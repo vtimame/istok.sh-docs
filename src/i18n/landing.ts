@@ -26,6 +26,7 @@ export interface LandingStrings {
       runs: string;
       tasks: string;
       search: string;
+      terminal: string;
     };
     alt: {
       projects: string;
@@ -68,12 +69,13 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     showcase: {
       title: ["See what your agents", "are working on."],
-      body: "`istok ui` opens a local dashboard for every project, task and run that updates live as agents write. The same data is in your terminal through `istok task`, `istok run` and the rest of the CLI. Nothing leaves your machine.",
+      body: "One interface for all your projects and tasks, in the browser and in the terminal. Everything your agents do shows up as it happens, and none of it leaves your machine.",
       tabs: {
         projects: "Projects",
         runs: "Runs",
         tasks: "Tasks",
         search: "Search",
+        terminal: "Terminal",
       },
       alt: {
         projects: "Projects page: nine projects with open, blocked and done task counts, one running and one stale run",
@@ -183,12 +185,13 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     showcase: {
       title: ["Следите за работой", "ваших агентов."],
-      body: "`istok ui` открывает локальную панель со всеми проектами, задачами и запусками, которая обновляется вживую, пока агенты работают. Те же данные доступны в терминале через `istok task`, `istok run` и другие команды CLI. Всё остаётся на вашем компьютере.",
+      body: "Один интерфейс для всех проектов и задач — в браузере и в терминале. Всё, что делают агенты, видно сразу, и ничего не покидает ваш компьютер.",
       tabs: {
         projects: "Проекты",
         runs: "Запуски",
         tasks: "Задачи",
         search: "Поиск",
+        terminal: "Терминал",
       },
       alt: {
         projects: "Страница проектов: девять проектов со счётчиками открытых, заблокированных и выполненных задач, один активный и один зависший запуск",

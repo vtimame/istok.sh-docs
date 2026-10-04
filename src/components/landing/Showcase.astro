@@ -1,6 +1,9 @@
 ---
 import BrowserFrame from "./BrowserFrame.astro";
 import SectionTitle from "./SectionTitle.astro";
+import TerminalFrame from "./TerminalFrame.astro";
+
+import terminalSession from "@/assets/terminal/session.ansi?raw";
 
 import type { LandingStrings } from "@/i18n/landing";
 
@@ -24,6 +27,7 @@ const views = [
   { id: "runs", light: runsLight, dark: runsDark, url: "127.0.0.1:7700/runs" },
   { id: "tasks", light: tasksLight, dark: tasksDark, url: "127.0.0.1:7700/projects/acme-api" },
   { id: "search", light: searchLight, dark: searchDark, url: "127.0.0.1:7700/projects/acme-api" },
+  { id: "terminal" },
 ] as const;
 ---
 
@@ -79,14 +83,20 @@ const views = [
               data-active={index === 0 ? "true" : "false"}
               class="[grid-area:1/1] transition-opacity duration-500 data-[active=false]:pointer-events-none data-[active=false]:invisible data-[active=false]:opacity-0"
             >
-              <BrowserFrame
-                light={view.light}
-                dark={view.dark}
-                alt={strings.alt[view.id]}
-                url={view.url}
-                sizes="(min-width: 1200px) 1152px, 100vw"
-                eager={index === 0}
-              />
+              {
+                view.id === "terminal" ? (
+                  <TerminalFrame ansi={terminalSession} />
+                ) : (
+                  <BrowserFrame
+                    light={view.light}
+                    dark={view.dark}
+                    alt={strings.alt[view.id]}
+                    url={view.url}
+                    sizes="(min-width: 1200px) 1152px, 100vw"
+                    eager={index === 0}
+                  />
+                )
+              }
             </div>
           ))
         }
