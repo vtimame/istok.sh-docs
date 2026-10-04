@@ -1,0 +1,123 @@
+---
+title: Быстрый старт
+description: Установите Istok, подключите кодинг-агента и посмотрите, как он запишет свою первую задачу. Это займёт около пяти минут.
+---
+
+import Tabs from "@/components/docs/mdx/Tabs.astro";
+import Tab from "@/components/docs/mdx/Tab.astro";
+import Prompt from "@/components/docs/mdx/Prompt.astro";
+import BrowserFrame from "@/components/landing/BrowserFrame.astro";
+import taskLight from "@/assets/screenshots/task-light.webp";
+import taskDark from "@/assets/screenshots/task-dark.webp";
+
+Через пять минут ваш агент начнёт записывать работу в Istok: задачу, попытку её решить и проверки, которые подтверждают результат. Всё это вы увидите в браузере.
+
+## 1. Установите Istok
+
+```sh
+curl -fsSL https://get.istok.sh | sh
+istok version
+```
+
+На Linux и macOS команда кладёт `istok` в `~/.local/bin`. Другие способы — на странице [Установка](/docs/ru/getting-started/installation).
+
+## 2. Подключите агента
+
+Добавьте Istok как MCP-сервер один раз, на уровне пользователя. После этого подключение работает во всех проектах. По идентификатору исполнителя (actor ID) Istok понимает, какой агент сделал работу.
+
+<Tabs labels={["Claude Code", "Codex", "Cursor", "Другие MCP-клиенты"]} group="agent">
+<Tab>
+
+```sh
+claude mcp add --transport stdio --scope user istok -- \
+  istok mcp --actor-id claude --actor-name "Claude Code"
+```
+
+Проверьте подключение командой `/mcp` внутри Claude Code.
+
+</Tab>
+<Tab>
+
+```sh
+codex mcp add istok -- \
+  istok mcp --actor-id codex --actor-name "Codex"
+```
+
+</Tab>
+<Tab>
+
+Добавьте в `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "istok": {
+      "command": "istok",
+      "args": ["mcp", "--actor-id", "cursor", "--actor-name", "Cursor"]
+    }
+  }
+}
+```
+
+</Tab>
+<Tab>
+
+Подойдёт любой MCP-клиент, который умеет запускать локальный stdio-сервер. Укажите ему эту команду:
+
+```sh
+istok mcp --actor-id my-agent --actor-name "My Agent"
+```
+
+Например, Antigravity CLI читает такой же JSON `mcpServers`, как Cursor, из файла `~/.gemini/config/mcp_config.json`.
+
+</Tab>
+</Tabs>
+
+## 3. Объясните агенту, когда им пользоваться
+
+MCP делает инструменты доступными, а инструкции говорят агенту, когда их применять. Добавьте этот блок в глобальные инструкции: `~/.claude/CLAUDE.md` для Claude Code, `~/.codex/AGENTS.md` для Codex, User Rules в настройках Cursor.
+
+```md
+## Работа с Istok
+
+Используй MCP-инструменты Istok для нетривиальной работы в репозиториях, зарегистрированных в Istok.
+
+- Перед началом найди текущий проект в Istok. Если он не зарегистрирован, сообщи мне и не регистрируй его, пока я не попрошу.
+- Используй подходящую существующую задачу, если она есть; иначе создай узкую задачу. Не создавай задачи для вопросов и мелких правок.
+- Возьми задачу в работу до начала реализации и записывай заметный прогресс, решения и блокеры.
+- Проверяй результат через Istok и записывай подтверждения. Закрывай задачу только после успешной проверки.
+- Не копируй состояние задач Istok в TODO-файлы и документы с планами.
+```
+
+Подробная версия — в разделе [Работа с агентом](/docs/ru/guides/working-with-agents#если-агент-забывает-про-istok).
+
+## 4. Зарегистрируйте проект
+
+Запустите агента в своём репозитории и попросите:
+
+<Prompt reply="Проект acme-api зарегистрирован в Istok.">Зарегистрируй этот проект в Istok.</Prompt>
+
+Агент регистрирует директорию, в которой его запустили. Istok ничего не пишет в репозиторий. Из терминала то же самое делает `istok init`.
+
+## 5. Дайте настоящую задачу
+
+Попросите о том, о чём попросили бы в любом случае:
+
+<Prompt>GET /orders/{"{id}"} отдаёт 500, если заказа нет. Пусть возвращает 404, а для остальных ошибок оставь 500.</Prompt>
+
+Агент создаёт задачу, берёт её в работу, пишет код, запускает тесты через Istok и закрывает задачу с этими подтверждениями. На простой вопрос он просто ответит.
+
+## 6. Посмотрите, что произошло
+
+```sh
+istok ui
+```
+
+Браузер откроет `http://127.0.0.1:7700`. Откройте задачу: там её история, каждый запуск и проверки, на которых держится «готово».
+
+<BrowserFrame light={taskLight} dark={taskDark} alt="Страница задачи в веб-интерфейсе Istok с критериями приёмки, историей и двумя запусками" url="127.0.0.1:7700/projects/acme-api/tasks/18" class="not-prose my-8" sizes="(min-width: 1024px) 720px, 100vw" />
+
+## Дальше
+
+- [Работа с агентом](/docs/ru/guides/working-with-agents) — что сказать, чтобы продолжить работу, передать её и закончить с доказательствами.
+- [Веб-интерфейс](/docs/ru/guides/web-ui) — всё, что показывает интерфейс.
