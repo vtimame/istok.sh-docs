@@ -109,12 +109,12 @@ export const landing: Record<Locale, LandingStrings> = {
       alt: "Run page: three passed validations with go test, go test -race and go vet",
     },
     local: {
-      title: ["Built around", "your project."],
-      body: "One binary and one SQLite file on your machine. No account, no cloud, no server to run. Agents come and go; the project keeps its history.",
+      title: ["Everything stays", "on your machine."],
+      body: "One binary and one SQLite file. No account, no cloud. Agents come and go; the project keeps its history.",
       facts: [
         { label: "Storage", value: "local SQLite" },
         { label: "Transport", value: "MCP" },
-        { label: "Scope", value: "per project" },
+        { label: "Data", value: "on your machine" },
         { label: "Agents", value: "any MCP client" },
       ],
     },
@@ -205,12 +205,12 @@ export const landing: Record<Locale, LandingStrings> = {
       alt: "Страница запуска: три успешные проверки go test, go test -race и go vet",
     },
     local: {
-      title: ["Всё вокруг", "вашего проекта."],
-      body: "Один бинарник и один файл SQLite на вашем компьютере. Без аккаунта, облака и отдельного сервера. Агенты приходят и уходят, а история остаётся с проектом.",
+      title: ["Всё остаётся", "на вашем компьютере."],
+      body: "Один бинарник и один файл SQLite. Без аккаунта и облака. Агенты приходят и уходят, а история остаётся с проектом.",
       facts: [
         { label: "Хранилище", value: "локальный SQLite" },
         { label: "Протокол", value: "MCP" },
-        { label: "Границы", value: "проект" },
+        { label: "Данные", value: "на вашем компьютере" },
         { label: "Агенты", value: "любой MCP-клиент" },
       ],
     },
