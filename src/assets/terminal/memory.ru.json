@@ -1,0 +1,73 @@
+{
+  "parts": [
+    {
+      "agent": "claude",
+      "cwd": "~/work/acme-api",
+      "prompt": "Запомни для этого проекта: время в API всегда в UTC, в формате RFC 3339.",
+      "steps": [
+        {
+          "kind": "istok",
+          "name": "context_add",
+          "summary": "\"Время в API — UTC в формате RFC 3339\"",
+          "output": [
+            {
+              "text": "saved · instruction · delivery always",
+              "tone": "success"
+            }
+          ]
+        },
+        {
+          "kind": "message",
+          "text": "Сохранил как правило проекта. Его получит каждый агент, который возьмёт задачу в acme-api."
+        }
+      ]
+    },
+    {
+      "agent": "codex",
+      "cwd": "~/work/acme-api",
+      "prompt": "Добавь created_at в ответ GET /orders/{id}.",
+      "steps": [
+        {
+          "kind": "istok",
+          "name": "task_create",
+          "summary": "\"Добавить created_at в ответ заказа\"",
+          "output": [
+            {
+              "text": "task #23 · open"
+            }
+          ]
+        },
+        {
+          "kind": "istok",
+          "name": "task_claim",
+          "summary": "#23",
+          "output": [
+            {
+              "text": "run started"
+            },
+            {
+              "text": "context: 3 project rules",
+              "tone": "muted"
+            },
+            {
+              "text": "· Run the full test suite before finishing",
+              "tone": "muted"
+            },
+            {
+              "text": "· Время в API — UTC в формате RFC 3339",
+              "tone": "success"
+            },
+            {
+              "text": "· Never log card data",
+              "tone": "muted"
+            }
+          ]
+        },
+        {
+          "kind": "message",
+          "text": "Учитываю правило проекта: created_at отдаю в UTC в формате RFC 3339."
+        }
+      ]
+    }
+  ]
+}

@@ -38,6 +38,7 @@ export interface LandingStrings {
     };
   };
   workflow: FeatureCopy & { replay: string };
+  memory: FeatureCopy;
   history: FeatureCopy & { alt: string };
   context: FeatureCopy & { alt: string };
   handoff: FeatureCopy & { facts: Fact[] };
@@ -88,6 +89,10 @@ export const landing: Record<Locale, LandingStrings> = {
       title: ["Describe the problem.", "Istok keeps the work."],
       body: "No need to manage tasks by hand. Your agent creates the task, claims it, records progress and validates the result.",
       replay: "Replay",
+    },
+    memory: {
+      title: ["Say it once.", "Every agent remembers."],
+      body: "Ask your agent to remember a rule, a decision or a gotcha. Istok keeps it with the project and hands it to every agent that picks up a task there, whether it is Claude or Codex.",
     },
     history: {
       title: ["See exactly", "what happened."],
@@ -190,6 +195,10 @@ export const landing: Record<Locale, LandingStrings> = {
       title: ["Опишите задачу.", "Istok сохранит работу."],
       body: "Не нужно вести задачи руками. Агент сам создаёт задачу, берёт её в работу, записывает прогресс и проверяет результат.",
       replay: "Повторить",
+    },
+    memory: {
+      title: ["Скажите один раз.", "Запомнят все агенты."],
+      body: "Попросите агента запомнить правило, решение или подводный камень. Istok сохранит это в проекте и передаст каждому агенту, который возьмёт здесь задачу, будь то Claude или Codex.",
     },
     history: {
       title: ["Видно всё,", "что произошло."],

@@ -3,8 +3,8 @@ import { RotateCcw } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-// A recorded session from tools/demosession in istok-cli: the steps, task
-// numbers and command output are what the real Istok returned.
+// Recorded sessions from tools/demosession in istok-cli: task numbers, context
+// and command output are what the real Istok returned.
 
 type Tone = "muted" | "success" | "added";
 
@@ -21,10 +21,15 @@ interface SessionStep {
   text?: string;
 }
 
-export interface Session {
+interface SessionPart {
+  agent: string;
   cwd: string;
   prompt: string;
   steps: SessionStep[];
+}
+
+export interface Session {
+  parts: SessionPart[];
 }
 
 interface AgentSessionProps {
@@ -34,31 +39,42 @@ interface AgentSessionProps {
 
 // One row of the terminal; the animation reveals rows in order.
 type Row =
+  | { kind: "shell"; cwd: string; agent: string }
+  | { kind: "prompt"; text: string }
   | { kind: "head"; step: SessionStep; wait: number }
   | { kind: "output"; line: SessionLine; first: boolean }
   | { kind: "message"; text: string }
   | { kind: "gap" };
 
-const typingDelay = 32;
+const typingDelay = 30;
 
-function buildRows(steps: SessionStep[]): Row[] {
+function buildRows(parts: SessionPart[]): Row[] {
   const rows: Row[] = [];
 
-  for (const step of steps) {
-    rows.push({ kind: "gap" });
-
-    if (step.kind === "message") {
-      rows.push({ kind: "message", text: step.text ?? "" });
-      continue;
+  parts.forEach((part, index) => {
+    if (index > 0) {
+      rows.push({ kind: "gap" }, { kind: "gap" });
     }
 
-    // Running the tests takes noticeably longer than a bookkeeping call.
-    const wait = step.name === "run_validate" ? 1600 : step.kind === "istok" ? 650 : 450;
-    rows.push({ kind: "head", step, wait });
+    rows.push({ kind: "shell", cwd: part.cwd, agent: part.agent });
+    rows.push({ kind: "prompt", text: part.prompt });
 
-    const output = step.output ?? [];
-    output.forEach((line, index) => rows.push({ kind: "output", line, first: index === 0 }));
-  }
+    for (const step of part.steps) {
+      rows.push({ kind: "gap" });
+
+      if (step.kind === "message") {
+        rows.push({ kind: "message", text: step.text ?? "" });
+        continue;
+      }
+
+      // Running the tests takes noticeably longer than a bookkeeping call.
+      const wait = step.name === "run_validate" ? 1600 : step.kind === "istok" ? 650 : 450;
+      rows.push({ kind: "head", step, wait });
+
+      const output = step.output ?? [];
+      output.forEach((line, lineIndex) => rows.push({ kind: "output", line, first: lineIndex === 0 }));
+    }
+  });
 
   return rows;
 }
@@ -68,12 +84,13 @@ function sleep(ms: number) {
 }
 
 export function AgentSession({ session, replayLabel }: AgentSessionProps) {
-  const rows = useMemo(() => buildRows(session.steps), [session.steps]);
+  const rows = useMemo(() => buildRows(session.parts), [session.parts]);
+  const title = session.parts[0]?.cwd ?? "~";
 
   const rootRef = useRef<HTMLDivElement>(null);
   const [run, setRun] = useState(0);
-  const [typed, setTyped] = useState(0);
   const [shown, setShown] = useState(0);
+  const [typing, setTyping] = useState<{ row: number; chars: number } | null>(null);
   const [pending, setPending] = useState<number | null>(null);
   const [finished, setFinished] = useState(false);
 
@@ -86,28 +103,19 @@ export function AgentSession({ session, replayLabel }: AgentSessionProps) {
     let cancelled = false;
 
     const play = async () => {
-      setTyped(0);
       setShown(0);
+      setTyping(null);
       setPending(null);
       setFinished(false);
 
       // Without motion the finished session is shown right away.
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        setTyped(session.prompt.length);
         setShown(rows.length);
         setFinished(true);
         return;
       }
 
-      await sleep(500);
-
-      for (let index = 1; index <= session.prompt.length; index++) {
-        if (cancelled) return;
-        setTyped(index);
-        await sleep(typingDelay);
-      }
-
-      await sleep(450);
+      await sleep(400);
 
       for (let index = 0; index < rows.length; index++) {
         if (cancelled) return;
@@ -115,14 +123,24 @@ export function AgentSession({ session, replayLabel }: AgentSessionProps) {
 
         setShown(index + 1);
 
-        if (row.kind === "head") {
+        if (row.kind === "prompt") {
+          for (let chars = 1; chars <= row.text.length; chars++) {
+            if (cancelled) return;
+            setTyping({ row: index, chars });
+            await sleep(typingDelay);
+          }
+          setTyping(null);
+          await sleep(400);
+        } else if (row.kind === "shell") {
+          await sleep(350);
+        } else if (row.kind === "head") {
           setPending(index);
           await sleep(row.wait);
           setPending(null);
         } else if (row.kind === "output") {
           await sleep(70);
         } else if (row.kind === "message") {
-          await sleep(200);
+          await sleep(500);
         }
       }
 
@@ -144,7 +162,7 @@ export function AgentSession({ session, replayLabel }: AgentSessionProps) {
       cancelled = true;
       observer.disconnect();
     };
-  }, [rows, session.prompt, run]);
+  }, [rows, run]);
 
   return (
     <div
@@ -159,59 +177,78 @@ export function AgentSession({ session, replayLabel }: AgentSessionProps) {
         </div>
 
         <div className="absolute left-1/2 hidden -translate-x-1/2 font-mono text-[11px] text-muted-foreground sm:block">
-          {session.cwd} — claude
+          {title}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setRun((value) => value + 1)}
+          className={cn(
+            "absolute top-1 right-2 flex h-6 items-center gap-1.5 rounded-md px-2 font-sans text-xs text-muted-foreground transition-opacity hover:bg-accent hover:text-foreground sm:top-1.5",
+            finished ? "opacity-100" : "pointer-events-none opacity-0",
+          )}
+        >
+          <RotateCcw className="size-3" />
+          {replayLabel}
+        </button>
       </div>
 
+      {/* Every row is rendered from the start so the terminal never changes height. */}
       <div className="px-4 py-4 font-mono text-[11px] leading-[1.65] sm:px-5 sm:text-[12.5px]">
-        <div>
-          <span className="text-(--term-green)">{session.cwd}</span> $ claude
-        </div>
-
-        <div className="mt-3 rounded-md border border-border px-3 py-1.5">
-          <span className="text-muted-foreground">&gt; </span>
-          <span>{session.prompt.slice(0, typed)}</span>
-          {typed < session.prompt.length && <span className="ml-px inline-block h-[1.1em] w-[0.55em] translate-y-[0.2em] animate-pulse bg-foreground/60" />}
-        </div>
-
-        {/* Every row is rendered from the start so the terminal never changes height. */}
-        <div className="mt-1">
-          {rows.map((row, index) => (
-            <div
-              key={index}
-              className={cn("transition-opacity duration-200", index < shown ? "opacity-100" : "opacity-0")}
-              aria-hidden={index >= shown}
-            >
-              <RowView row={row} pending={pending === index} />
-            </div>
-          ))}
-        </div>
+        {rows.map((row, index) => (
+          <div
+            key={index}
+            className={cn("transition-opacity duration-200", index < shown ? "opacity-100" : "opacity-0")}
+            aria-hidden={index >= shown}
+          >
+            <RowView
+              row={row}
+              pending={pending === index}
+              typedChars={typing?.row === index ? typing.chars : undefined}
+            />
+          </div>
+        ))}
       </div>
-
-      <button
-        type="button"
-        onClick={() => setRun((value) => value + 1)}
-        className={cn(
-          "absolute top-1 right-2 flex h-6 items-center gap-1.5 rounded-md px-2 font-sans text-xs text-muted-foreground transition-opacity hover:bg-accent hover:text-foreground sm:top-1.5",
-          finished ? "opacity-100" : "pointer-events-none opacity-0",
-        )}
-      >
-        <RotateCcw className="size-3" />
-        {replayLabel}
-      </button>
     </div>
   );
 }
 
-function RowView({ row, pending }: { row: Row; pending: boolean }) {
+interface RowViewProps {
+  row: Row;
+  pending: boolean;
+  typedChars?: number;
+}
+
+function RowView({ row, pending, typedChars }: RowViewProps) {
   switch (row.kind) {
     case "gap":
       return <div className="h-2.5" />;
 
+    case "shell":
+      return (
+        <div>
+          <span className="text-(--term-green)">{row.cwd}</span> $ {row.agent}
+        </div>
+      );
+
+    case "prompt": {
+      const typingNow = typedChars !== undefined;
+
+      return (
+        <div className="mt-2 rounded-md border border-border px-3 py-1.5 font-sans text-[12.5px] sm:text-[13.5px]">
+          <span className="font-mono text-muted-foreground">&gt; </span>
+          <span>{typingNow ? row.text.slice(0, typedChars) : row.text}</span>
+          {typingNow && (
+            <span className="ml-px inline-block h-[1.1em] w-[0.5em] translate-y-[0.2em] animate-pulse bg-foreground/60" />
+          )}
+        </div>
+      );
+    }
+
     case "message":
       return (
-        <div className="flex gap-2 font-sans text-[12.5px] leading-relaxed text-foreground sm:text-[13.5px]">
-          <span className="text-foreground">●</span>
+        <div className="flex gap-2 font-sans text-[12.5px] leading-relaxed sm:text-[13.5px]">
+          <span>●</span>
           <span>{row.text}</span>
         </div>
       );
@@ -221,15 +258,13 @@ function RowView({ row, pending }: { row: Row; pending: boolean }) {
         <div className="flex gap-2">
           <span className={pending ? "animate-pulse text-muted-foreground" : "text-(--term-green)"}>●</span>
           <span className="min-w-0 truncate">
-            {row.step.kind === "istok" ? (
+            {row.step.kind === "istok" && (
               <>
                 <span className="text-(--term-cyan)">istok</span>
                 <span className="text-muted-foreground"> · </span>
-                <span className="font-semibold text-foreground">{row.step.name}</span>
               </>
-            ) : (
-              <span className="font-semibold text-foreground">{row.step.name}</span>
             )}
+            <span className="font-semibold">{row.step.name}</span>
             {row.step.summary && <span className="text-muted-foreground"> ({row.step.summary})</span>}
           </span>
         </div>

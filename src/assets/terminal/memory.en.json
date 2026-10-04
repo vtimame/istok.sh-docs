@@ -1,0 +1,73 @@
+{
+  "parts": [
+    {
+      "agent": "claude",
+      "cwd": "~/work/acme-api",
+      "prompt": "Remember for this project: API timestamps are always UTC, in RFC 3339.",
+      "steps": [
+        {
+          "kind": "istok",
+          "name": "context_add",
+          "summary": "\"API timestamps are UTC in RFC 3339\"",
+          "output": [
+            {
+              "text": "saved · instruction · delivery always",
+              "tone": "success"
+            }
+          ]
+        },
+        {
+          "kind": "message",
+          "text": "Saved as a project rule. Every agent that picks up a task in acme-api will get it."
+        }
+      ]
+    },
+    {
+      "agent": "codex",
+      "cwd": "~/work/acme-api",
+      "prompt": "Add created_at to the GET /orders/{id} response.",
+      "steps": [
+        {
+          "kind": "istok",
+          "name": "task_create",
+          "summary": "\"Add created_at to the order response\"",
+          "output": [
+            {
+              "text": "task #23 · open"
+            }
+          ]
+        },
+        {
+          "kind": "istok",
+          "name": "task_claim",
+          "summary": "#23",
+          "output": [
+            {
+              "text": "run started"
+            },
+            {
+              "text": "context: 3 project rules",
+              "tone": "muted"
+            },
+            {
+              "text": "· Run the full test suite before finishing",
+              "tone": "muted"
+            },
+            {
+              "text": "· API timestamps are UTC in RFC 3339",
+              "tone": "success"
+            },
+            {
+              "text": "· Never log card data",
+              "tone": "muted"
+            }
+          ]
+        },
+        {
+          "kind": "message",
+          "text": "Following the project rule: created_at goes out in UTC as RFC 3339."
+        }
+      ]
+    }
+  ]
+}

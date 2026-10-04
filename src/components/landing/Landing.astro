@@ -15,7 +15,10 @@ import { ThreadVisual } from "./ThreadVisual";
 
 import { homeHref, locales, type Locale } from "@/i18n";
 import { landing } from "@/i18n/landing";
-import agentSession from "@/assets/terminal/agent-session.json";
+import workEn from "@/assets/terminal/work.en.json";
+import workRu from "@/assets/terminal/work.ru.json";
+import memoryEn from "@/assets/terminal/memory.en.json";
+import memoryRu from "@/assets/terminal/memory.ru.json";
 
 import taskLight from "@/assets/screenshots/task-light.webp";
 import taskDark from "@/assets/screenshots/task-dark.webp";
@@ -31,6 +34,12 @@ interface Props {
 const { lang } = Astro.props;
 const strings = landing[lang];
 
+// The terminals replay sessions recorded in the page's language.
+const sessions = {
+  en: { work: workEn, memory: memoryEn },
+  ru: { work: workRu, memory: memoryRu },
+}[lang] as { work: Session; memory: Session };
+
 const alternates = Object.fromEntries(locales.map((locale) => [locale, homeHref(locale)]));
 const alternateHref = homeHref(lang === "en" ? "ru" : "en");
 ---
@@ -43,10 +52,14 @@ const alternateHref = homeHref(lang === "en" ? "ru" : "en");
     <Showcase strings={strings.showcase} />
 
     <FeatureSection title={strings.workflow.title} body={strings.workflow.body}>
-      <AgentSession client:visible session={agentSession as Session} replayLabel={strings.workflow.replay} />
+      <AgentSession client:visible session={sessions.work} replayLabel={strings.workflow.replay} />
     </FeatureSection>
 
-    <FeatureSection title={strings.history.title} body={strings.history.body} reverse>
+    <FeatureSection title={strings.memory.title} body={strings.memory.body} reverse>
+      <AgentSession client:visible session={sessions.memory} replayLabel={strings.workflow.replay} />
+    </FeatureSection>
+
+    <FeatureSection title={strings.history.title} body={strings.history.body}>
       <BrowserFrame
         light={taskLight}
         dark={taskDark}
@@ -55,19 +68,19 @@ const alternateHref = homeHref(lang === "en" ? "ru" : "en");
       />
     </FeatureSection>
 
-    <FeatureSection title={strings.context.title} body={strings.context.body}>
+    <FeatureSection title={strings.context.title} body={strings.context.body} reverse>
       <BrowserFrame light={contextLight} dark={contextDark} alt={strings.context.alt} url="127.0.0.1:7700/runs/…" />
     </FeatureSection>
 
-    <FeatureSection title={strings.handoff.title} body={strings.handoff.body} facts={strings.handoff.facts} reverse>
+    <FeatureSection title={strings.handoff.title} body={strings.handoff.body} facts={strings.handoff.facts}>
       <HandoffVisual client:visible />
     </FeatureSection>
 
-    <FeatureSection title={strings.evidence.title} body={strings.evidence.body}>
+    <FeatureSection title={strings.evidence.title} body={strings.evidence.body} reverse>
       <BrowserFrame light={runLight} dark={runDark} alt={strings.evidence.alt} url="127.0.0.1:7700/runs/…" />
     </FeatureSection>
 
-    <FeatureSection title={strings.local.title} body={strings.local.body} facts={strings.local.facts} reverse>
+    <FeatureSection title={strings.local.title} body={strings.local.body} facts={strings.local.facts}>
       <ThreadVisual client:visible />
     </FeatureSection>
 
