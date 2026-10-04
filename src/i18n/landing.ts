@@ -41,7 +41,6 @@ export interface LandingStrings {
   memory: FeatureCopy;
   history: FeatureCopy & { alt: string };
   context: FeatureCopy & { alt: string };
-  handoff: FeatureCopy & { facts: Fact[] };
   evidence: FeatureCopy & { alt: string };
   local: FeatureCopy & { facts: Fact[] };
   start: {
@@ -103,16 +102,6 @@ export const landing: Record<Locale, LandingStrings> = {
       title: ["Start with context,", "not from zero."],
       body: "When an agent claims a task, it gets the relevant code, rules and decisions right away. Istok keeps a copy, so you can always see what the agent started with.",
       alt: "What the agent saw: context budget, three context records and retrieved code with syntax highlighting",
-    },
-    handoff: {
-      title: ["Switch agents.", "Keep the work."],
-      body: "One agent can stop and another can continue: the task stays the same. Istok keeps the work as one continuous thread across runs.",
-      facts: [
-        { label: "Task", value: "stays open" },
-        { label: "Old run", value: "abandoned" },
-        { label: "New run", value: "fresh" },
-        { label: "Context", value: "retrieved again" },
-      ],
     },
     evidence: {
       title: ["Done means", "proven."],
@@ -209,16 +198,6 @@ export const landing: Record<Locale, LandingStrings> = {
       title: ["Начинайте с контекста,", "а не с нуля."],
       body: "Взяв задачу, агент сразу получает нужный код, правила и решения проекта. Istok сохраняет копию, так что всегда видно, с чем агент начинал.",
       alt: "Что получил агент: бюджет контекста, три записи контекста и найденный код с подсветкой синтаксиса",
-    },
-    handoff: {
-      title: ["Меняйте агентов.", "Работа остаётся."],
-      body: "Один агент может остановиться, другой — продолжить, а задача остаётся той же. Istok ведёт работу как одну непрерывную нить через все запуски.",
-      facts: [
-        { label: "Задача", value: "остаётся открытой" },
-        { label: "Старый запуск", value: "брошен" },
-        { label: "Новый запуск", value: "с чистого листа" },
-        { label: "Контекст", value: "собран заново" },
-      ],
     },
     evidence: {
       title: ["Готово —", "значит доказано."],

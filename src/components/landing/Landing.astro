@@ -9,7 +9,6 @@ import FeatureSection from "./FeatureSection.astro";
 import GetStartedSection from "./GetStartedSection.astro";
 import Hero from "./Hero.astro";
 import Showcase from "./Showcase.astro";
-import { HandoffVisual } from "./HandoffVisual";
 import { AgentSession, type Session } from "./AgentSession";
 import { ThreadVisual } from "./ThreadVisual";
 
@@ -72,15 +71,12 @@ const alternateHref = homeHref(lang === "en" ? "ru" : "en");
       <BrowserFrame light={contextLight} dark={contextDark} alt={strings.context.alt} url="127.0.0.1:7700/runs/…" />
     </FeatureSection>
 
-    <FeatureSection title={strings.handoff.title} body={strings.handoff.body} facts={strings.handoff.facts}>
-      <HandoffVisual client:visible />
-    </FeatureSection>
 
-    <FeatureSection title={strings.evidence.title} body={strings.evidence.body} reverse>
+    <FeatureSection title={strings.evidence.title} body={strings.evidence.body}>
       <BrowserFrame light={runLight} dark={runDark} alt={strings.evidence.alt} url="127.0.0.1:7700/runs/…" />
     </FeatureSection>
 
-    <FeatureSection title={strings.local.title} body={strings.local.body} facts={strings.local.facts}>
+    <FeatureSection title={strings.local.title} body={strings.local.body} facts={strings.local.facts} reverse>
       <ThreadVisual client:visible />
     </FeatureSection>
 
