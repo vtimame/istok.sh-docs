@@ -135,7 +135,7 @@ export const landing: Record<Locale, LandingStrings> = {
       more: "Full quick start",
     },
     cta: {
-      title: ["Give your agents", "a shared project memory."],
+      title: ["Give your agents", "a shared memory."],
       body: "Set up your project, connect your coding agents through MCP and let Istok keep the work between sessions.",
       button: "Quick start",
     },
@@ -225,7 +225,7 @@ export const landing: Record<Locale, LandingStrings> = {
       more: "Подробный быстрый старт",
     },
     cta: {
-      title: ["Дайте агентам", "общую память проекта."],
+      title: ["Дайте агентам", "общую память."],
       body: "Подготовьте проект, подключите агентов через MCP, и Istok сохранит работу между сессиями.",
       button: "Быстрый старт",
     },
