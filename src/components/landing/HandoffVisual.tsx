@@ -219,8 +219,8 @@ export function HandoffVisual() {
         </div>
 
         <div className="mt-4 space-y-2 font-mono text-[9px]">
-          <div className="text-muted-foreground/40">run A</div>
-          <div className="text-muted-foreground/28">snapshot A</div>
+          <div className="text-muted-foreground/65">run A</div>
+          <div className="text-muted-foreground/65">snapshot A</div>
           <div className="text-amber-500/55">abandoned</div>
         </div>
       </div>
@@ -267,8 +267,8 @@ export function HandoffVisual() {
         </div>
 
         <div className="mt-4 space-y-2 font-mono text-[9px]">
-          <div className="text-muted-foreground/45">run B</div>
-          <div className="text-muted-foreground/30">snapshot B</div>
+          <div className="text-muted-foreground/75">run B</div>
+          <div className="text-muted-foreground/65">snapshot B</div>
           <div className="text-emerald-500/60">fresh retrieval</div>
         </div>
       </div>
@@ -287,7 +287,7 @@ function StateLabel({ label, className }: { label: string; className?: string })
       className={`
         absolute
         font-mono text-[8px]
-        text-muted-foreground/30
+        text-muted-foreground/65
         ${className ?? ""}
       `}
     >

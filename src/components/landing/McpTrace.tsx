@@ -137,7 +137,7 @@ export function McpTrace({ agent, steps, className, startDelay = 350 }: Props) {
           className="
             font-mono text-[9px]
             uppercase tracking-[0.14em]
-            text-muted-foreground/35
+            text-muted-foreground/65
           "
         >
           MCP / Istok
@@ -179,12 +179,12 @@ function TraceStepView({ step, active }: { step: TraceStep; active: boolean }) {
   return (
     <div className={cn("transition-opacity duration-300", active ? "opacity-100" : "opacity-70")}>
       <div className="flex items-center gap-3">
-        <span className="text-muted-foreground/30">call</span>
+        <span className="text-muted-foreground/65">call</span>
 
         <span className="text-sky-400">istok.{step.tool}</span>
 
         {active && (
-          <span className="ml-auto animate-pulse text-[8px] text-muted-foreground/30">running</span>
+          <span className="ml-auto animate-pulse text-[8px] text-muted-foreground/65">running</span>
         )}
       </div>
 
@@ -199,7 +199,7 @@ function TraceStepView({ step, active }: { step: TraceStep; active: boolean }) {
       {step.result && (
         <div className="mt-3">
           <div className="flex items-center gap-3">
-            <span className="text-muted-foreground/30">result</span>
+            <span className="text-muted-foreground/65">result</span>
 
             <span className="size-1.5 rounded-full bg-emerald-500" />
           </div>
@@ -218,7 +218,7 @@ function TraceStepView({ step, active }: { step: TraceStep; active: boolean }) {
 function TraceFieldRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid grid-cols-[92px_1fr] gap-3">
-      <span className="text-muted-foreground/40">{label}</span>
+      <span className="text-muted-foreground/65">{label}</span>
 
       <span className="min-w-0 truncate text-foreground/70">{value}</span>
     </div>
