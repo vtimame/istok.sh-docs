@@ -58,7 +58,7 @@ const media = ["browser", "terminal"] as const;
 const mediumIcons = { browser: Globe, terminal: SquareTerminal };
 
 const segment =
-  "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm aria-pressed:bg-background aria-pressed:text-foreground aria-pressed:shadow-sm";
+  "inline-flex h-8 items-center justify-center rounded-md px-3 text-sm text-muted-foreground transition-colors hover:text-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm aria-pressed:bg-background aria-pressed:text-foreground aria-pressed:shadow-sm";
 ---
 
 <section class="border-t border-border/60 py-24 sm:py-28 lg:py-32">
@@ -98,7 +98,7 @@ const segment =
                 aria-pressed={index === 0 ? "true" : "false"}
                 aria-label={strings.media[medium]}
                 title={strings.media[medium]}
-                class:list={[segment, "inline-flex items-center gap-1.5 max-sm:px-2.5"]}
+                class:list={[segment, "gap-1.5 max-sm:px-2.5"]}
               >
                 {(() => {
                   const Icon = mediumIcons[medium];
