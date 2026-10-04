@@ -1,4 +1,6 @@
 ---
+import { Globe, SquareTerminal } from "lucide-react";
+
 import BrowserFrame from "./BrowserFrame.astro";
 import SectionTitle from "./SectionTitle.astro";
 import TerminalFrame from "./TerminalFrame.astro";
@@ -52,6 +54,9 @@ const views = [
 
 const media = ["browser", "terminal"] as const;
 
+// On narrow screens the medium switch shows icons only, so both controls fit on one row.
+const mediumIcons = { browser: Globe, terminal: SquareTerminal };
+
 const segment =
   "rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground aria-selected:bg-background aria-selected:text-foreground aria-selected:shadow-sm aria-pressed:bg-background aria-pressed:text-foreground aria-pressed:shadow-sm";
 ---
@@ -65,7 +70,7 @@ const segment =
     </div>
 
     <div class="mx-auto mt-12 max-w-6xl" data-showcase data-medium="browser" data-reveal>
-      <div class="flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center justify-between gap-3">
         <div role="tablist" aria-label={strings.title.join(" ")} class="flex gap-1 rounded-lg bg-muted p-1">
           {
             views.map((view, index) => (
@@ -91,9 +96,15 @@ const segment =
                 type="button"
                 data-medium-button={medium}
                 aria-pressed={index === 0 ? "true" : "false"}
-                class={segment}
+                aria-label={strings.media[medium]}
+                title={strings.media[medium]}
+                class:list={[segment, "inline-flex items-center gap-1.5 max-sm:px-2.5"]}
               >
-                {strings.media[medium]}
+                {(() => {
+                  const Icon = mediumIcons[medium];
+                  return <Icon className="size-4 shrink-0 sm:hidden" aria-hidden="true" />;
+                })()}
+                <span class="max-sm:sr-only">{strings.media[medium]}</span>
               </button>
             ))
           }
