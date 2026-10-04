@@ -12,7 +12,10 @@ interface Props {
   alternates?: Partial<Record<string, string>>;
 }
 
-const { lang = "en", image = "/og.png", alternates = {} } = Astro.props;
+const { lang = "en", alternates = {} } = Astro.props;
+
+// Link previews follow the page language.
+const image = Astro.props.image ?? (lang === "ru" ? "/og-ru.png" : "/og.png");
 
 const strings = ui[isLocale(lang) ? lang : "en"];
 const title = Astro.props.title ?? strings.meta.title;
