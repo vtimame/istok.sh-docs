@@ -1,0 +1,70 @@
+---
+title: Validation
+description: How Istok turns "tests pass" from a sentence in the chat into recorded evidence attached to the work.
+---
+
+import BrowserFrame from "@/components/landing/BrowserFrame.astro";
+import runLight from "@/assets/screenshots/run-light.webp";
+import runDark from "@/assets/screenshots/run-dark.webp";
+
+An agent saying "done, tests pass" is a claim. Istok lets the agent attach proof instead: the command it ran, the exit status, and the output. This page explains how that evidence is recorded and how it gates finishing work.
+
+## Executions and validations
+
+Inside a run, an agent runs commands through Istok rather than directly in its shell. There are two kinds:
+
+* **Execution** (`run_exec`, `istok run exec`) — a command that is part of the work, such as a linter or a code generator. Istok stores the command, its exit status, and its output.
+* **Validation** (`run_validate`, `istok run validate`) — a command whose result counts as evidence that the work is correct, such as `go test ./...` or `pnpm test`. Istok runs it, stores its output, and derives a passed or failed validation from the result.
+
+```text
+Run
+ ├── exec      pnpm lint
+ ├── exec      pnpm build
+ └── validate  pnpm test   → passed
+                               ↓
+                     evidence for finishing
+```
+
+Both kinds are bounded. Each output stream keeps up to 1 MiB; executions time out after 30 minutes and validations after 10 by default. Commands get an allowlisted environment, not everything from the parent process, and commands Istok classifies as dangerous need an explicit override with a reason. Details are in the [`istok run` reference](/docs/en/reference/run).
+
+## Finishing a run
+
+A run finishes as `succeeded`, `failed`, `blocked`, or `cancelled`. To finish as `succeeded`, the run needs a passed validation and no execution still running.
+
+When no automated check applies, for example a documentation-only change, the agent can finish without validation, but only explicitly: it must say so and give a reason, and the reason is stored with the run.
+
+## Completing a task
+
+A task is completed with a reference to a succeeded run and a validation from it:
+
+```text
+Task #12
+  ↓  claim
+Run C
+  ↓  implement, validate → passed
+Run C succeeded
+  ↓
+Task #12 done   (run C, validation V)
+```
+
+The completion therefore records not just that the task was marked done, but how the result was checked. As with runs, completion without evidence is possible only as an explicit override with a reason.
+
+## Failed checks are part of the history
+
+A failed validation does not throw anything away. The agent fixes the problem and validates again in the same run; the failed attempt stays visible. If the run is given up, the next run starts with that history available.
+
+## Work done outside Istok
+
+Sometimes a check has to run elsewhere, for example on CI or by hand. Lower-level tools record such work after the fact: start and finish an execution, then record a validation for it. A validation recorded this way has the source `attested`, so it is never confused with one Istok derived from a command it ran itself.
+
+## Artifacts
+
+Files a run produces can be recorded as artifacts. Istok stores them outside the database, in its own data directory, keeps a reference in the run, and can verify a recorded artifact later.
+
+## Seeing the evidence
+
+Each run page in the web UI lists its validations with their command, status, and output, next to the executions and the context the agent started with.
+
+<BrowserFrame light={runLight} dark={runDark} alt="A run page in the Istok web UI showing passed validations" url="127.0.0.1:7700/runs" class="not-prose my-8" sizes="(min-width: 1024px) 720px, 100vw" />
+
+To ask your agent to finish with proof, see [Working with your agent](/docs/en/guides/working-with-agents). From the terminal, `istok run show RUN_ID` prints the same record.

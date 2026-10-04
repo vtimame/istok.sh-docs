@@ -1,0 +1,132 @@
+---
+title: Working with your agent
+description: What to say to your coding agent in everyday situations, and what Istok records each time.
+---
+
+import Prompt from "@/components/docs/mdx/Prompt.astro";
+import Callout from "@/components/docs/mdx/Callout.astro";
+
+You use Istok by talking to your agent. This page shows what to say in the situations that come up every day, and what Istok records each time, so you know what the next session will find.
+
+The examples use the project `acme-api` with Claude Code and Codex. They assume the agent is connected and has the instructions from the [Quick start](/docs/en/getting-started/quick-start).
+
+## Start a task
+
+Describe the work the way you normally would. You do not need to mention Istok.
+
+<Prompt>GET /orders/{"{id}"} returns 500 when the order does not exist. Unknown orders should get 404; other errors must stay 500.</Prompt>
+
+**What Istok records:** a task such as #18 "Return 404 for missing orders" with a description and acceptance criteria. When the agent starts coding it claims the task, which opens a run under the agent's actor ID and saves exactly what context it was given.
+
+For a question or a one-line fix the agent just answers. Tasks are for work that is worth picking up later.
+
+## Check where things are
+
+Ask about the project instead of scrolling back through chats.
+
+<Prompt reply="3 tasks are open, 2 are blocked. #20 has an active run by Codex; #19 waits on #10.">What is open in Istok for this project?</Prompt>
+
+<Prompt>What happened with task 18? Who worked on it and why did the first attempt fail?</Prompt>
+
+**What Istok records:** nothing. The agent reads tasks, their history and runs. You can see the same in the [web UI](/docs/en/guides/web-ui), or with `istok task list` and `istok task show 18` in a terminal.
+
+## Continue in a new session
+
+A new chat knows nothing about the old one. Point it at the task.
+
+<Prompt>Continue task 20.</Prompt>
+
+<Prompt>Continue the unfinished work on payment retries.</Prompt>
+
+**What Istok records:** the agent reads the task's progress notes and earlier runs, then continues. If its previous attempt is still open it recovers that run; otherwise it claims the task again and a new run starts with fresh context.
+
+## Remember a rule
+
+When you correct the agent and want the correction to stick, say so.
+
+<Prompt>Remember for this project: public API fields use snake_case.</Prompt>
+
+<Prompt>Make it a rule that every change to the API is validated with the API test suite.</Prompt>
+
+**What Istok records:** a saved context record (a decision, constraint or instruction). Instructions reach every future run; other records are delivered when they match the task. See [Project rules and knowledge](/docs/en/guides/rules-and-knowledge).
+
+## Finish with proof
+
+The instructions already ask the agent to validate before completing. You can be explicit about what counts as proof.
+
+<Prompt reply="go test ./... passed (validation recorded). Run finished as succeeded, task 18 is done.">Run the full test suite through Istok and close the task only if it passes.</Prompt>
+
+**What Istok records:** a validation with the command, its result and its output, attached to the run. The task is completed with a reference to that run and validation, so "done" points at evidence. If a check fails, the failure stays in the history and the task stays open.
+
+When no check applies, for example a documentation change, the agent has to give an explicit reason to finish without validation. That reason is recorded too.
+
+<Callout type="tip">To see how a task was verified, open its run in the web UI and look at **Validations**.</Callout>
+
+## Hand over to another agent
+
+Ask the current agent to leave a clean state, then start the other one.
+
+<Prompt>Record what you found on task 18 and stop working on it. Claude Code will take over.</Prompt>
+
+The first agent adds a progress note or comment and finishes its run, which frees the task. Then, in the other agent:
+
+<Prompt>Pick up task 18 in Istok. Read what the previous attempt found first.</Prompt>
+
+**What Istok records:** a second run on the same task under the new actor (`claude`). Both attempts, with their summaries and validations, stay on the task page. See [Several agents, one project](/docs/en/guides/multiple-agents) for identities and interrupted runs.
+
+## When the agent forgets to use Istok
+
+Sometimes an agent starts coding without a task. Usually one of three things is missing:
+
+- **The MCP server is not connected.** Check with `/mcp` in Claude Code or your agent's MCP settings.
+- **The project is not registered.** Run `istok project list`, or ask the agent to register the project.
+- **The instructions are missing or too weak.** The agent does not know when to use the tools.
+
+To correct it in the moment:
+
+<Prompt>Use Istok for this: find or create a task, claim it, and record validation before you finish.</Prompt>
+
+If it keeps happening, replace the short block from the quick start with this longer version in your global instructions (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, or User Rules in Cursor):
+
+```md
+## Working with Istok
+
+Istok is the preferred source of durable project state for non-trivial work in repositories registered with Istok.
+
+Use Istok MCP tools as the primary interface for project state, tasks, context, runs, validation, and repository retrieval. Fall back to the Istok CLI only when MCP is unavailable or does not expose an operation, and prefer structured output.
+
+### Before non-trivial work
+
+1. Determine the current repository or project root.
+2. Resolve the project in Istok. If several projects match, use the most specific one. Never silently use a different project.
+3. If the project is registered, load its enabled project instructions and use the bounded context Istok assembles for the task. Do not bulk-load all saved context or knowledge.
+4. Check existing tasks when the work may already be represented by one.
+
+If the repository is not registered, tell the user, do not initialize it automatically, and continue without Istok unless the user asks to initialize it.
+
+### Tasks
+
+Use a task for feature work, bug fixes, refactoring, migrations, investigations, and other non-trivial changes. Do not create tasks for questions, explanations, tiny edits, or quick code reading.
+
+1. Reuse a relevant task, or create a focused one without waiting to be asked.
+2. Claim the task and use the run for the current attempt.
+3. Record meaningful progress, blockers, dependencies, and decisions as they happen.
+4. Validate the result and record the commands, results, and evidence.
+5. Complete the task only after the result is implemented and verified. Implementation alone is not completion.
+
+### Context and knowledge
+
+Follow enabled project instructions returned by Istok. Use context for short durable decisions, constraints, and conventions. Use knowledge for longer current truth such as architecture notes and runbooks: find it through the catalog or search and read only what is relevant.
+
+Distill knowledge as a draft with provenance, verify it against current code, record a review, and promote it only after review. Supersede knowledge that is no longer accurate.
+
+Never write Istok-managed content into the project root. Do not copy active task state into TODO files, plans, or status documents unless the user asks.
+
+### Retrieval and completion
+
+Prefer Istok search and graph tools to locate code, but verify details against the current source before changing it.
+
+Never claim validation passed unless it ran successfully. If some validation could not be performed, say so instead of presenting the work as fully verified. Keep Istok in sync with the work so the user does not have to.
+```
+
+For a repository where every contributor should follow the same workflow, you can also commit a shorter version of these rules to the project's `AGENTS.md` or `CLAUDE.md`.

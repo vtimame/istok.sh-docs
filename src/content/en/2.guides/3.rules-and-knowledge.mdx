@@ -1,0 +1,84 @@
+---
+title: Project rules and knowledge
+description: Save the rules and documentation your agents should know, control when they receive them, and check what an agent actually saw.
+---
+
+import Prompt from "@/components/docs/mdx/Prompt.astro";
+import Callout from "@/components/docs/mdx/Callout.astro";
+
+Istok can remember two kinds of things for a project: short **rules** that agents receive when they start a task, and longer **knowledge** that agents look up when they need it. This page shows how to save both and how to check what an agent was given.
+
+Both live in the Istok database, not in your repository. Your `README`, `AGENTS.md` and docs stay as they are.
+
+## Rules: saved context
+
+A rule is a short context record: a convention, a decision, a constraint or a standing instruction. The easiest way to add one is to tell the agent.
+
+<Prompt>Remember for this project: public API fields use snake_case.</Prompt>
+
+<Prompt>Add an instruction: changes to the API must be validated with the API test suite.</Prompt>
+
+The agent saves a record with a kind: `note`, `decision`, `constraint` or `instruction`. From a terminal, the same is:
+
+```sh
+istok context add "API naming convention" --kind decision \
+  --body "Public API fields use snake_case."
+```
+
+To see what the project has saved, run `istok context list`, or ask the agent to list the project's rules.
+
+## When a rule reaches the agent
+
+Every record has a delivery mode that decides when an agent receives it:
+
+- **Always** — every run gets it. Instructions use this by default. Keep these short, because they take space in every run.
+- **When relevant** (`ranked`) — Istok compares the record with the task's title, description, criteria and notes, and includes the best matches. This is the default for notes, decisions and constraints.
+- **Only on request** (`manual`) — never included automatically. Useful for long notes you only want in specific tasks.
+
+<Prompt>Save the legacy billing migration notes, but only deliver them when I ask.</Prompt>
+
+Instructions also have a priority from `critical` to `low`, which sets their order. A record can carry a review date, an expiry date, or point to a newer record that replaces it, so old rules do not linger.
+
+The context an agent receives has a fixed size: 16 KiB of saved context and 32 KiB of code, 48 KiB in total. If the always-delivered records no longer fit, the claim fails with a message naming the records instead of silently dropping them. Details and flags are in the [`istok context` reference](/docs/en/reference/context).
+
+To switch an instruction off without deleting it, ask the agent to disable it, or use `istok context disable`.
+
+## Knowledge: longer documentation
+
+Knowledge is for material that is too long to send with every task: how the refund flow works, why orders use UUIDv7, how to rotate keys. Each item has a kind: `architecture`, `domain`, `decision`, `runbook` or `note`.
+
+Agents do not receive knowledge bodies automatically. Each run gets a short briefing with the titles and summaries of current items, and the agent reads a full item when the task needs it.
+
+The usual way to create knowledge is at the end of an investigation:
+
+<Prompt>Write up what you learned about the refund flow as a knowledge draft, with this task as the source.</Prompt>
+
+## Review before agents rely on it
+
+New knowledge is a **draft**. It becomes **current**, and appears in briefings, only after someone reviews it and promotes it:
+
+1. Read the draft: `istok knowledge show ID`, or ask the agent to show it.
+2. Check it against the code and record a review with a note on what you checked.
+3. Promote it to current.
+
+```sh
+istok knowledge review ID --expected-revision 1 \
+  --note "Checked against internal/refunds on main"
+istok knowledge promote ID --expected-revision 2
+```
+
+You can ask an agent you trust to do the review, but the review note is recorded either way. Current items cannot be edited. When facts change, a new reviewed draft **supersedes** the old item, which stays readable as history.
+
+<Callout type="note">Editing a draft clears its review, so changed text always has to be reviewed again before it is promoted.</Callout>
+
+Browse knowledge in the web UI under a project's **Knowledge** page, or with `istok knowledge list` and `istok knowledge search`. To get an item as a file, `istok knowledge export` writes it to a path you choose.
+
+## Check what an agent saw
+
+When an agent ignored a rule, find out whether it received it.
+
+- **Before a run:** `istok context preview 18` shows what a claim of task 18 would receive, with each record's delivery mode and score, and how much of the budget is used. It does not start a run.
+- **After a run:** open the run in the [web UI](/docs/en/guides/web-ui) and choose **What the agent saw**. It shows the exact records, code and knowledge briefing saved for that run.
+- **Overall health:** `istok context doctor` reports expired, superseded and review-due records, oversized records, and instructions that exceed the budget.
+
+For how assembly works under the hood, see [Context and knowledge](/docs/en/how-istok-works/context-and-knowledge).

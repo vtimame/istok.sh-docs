@@ -1,0 +1,61 @@
+---
+title: Several agents, one project
+description: Give each agent its own identity, hand work between them, and deal with runs an agent left behind.
+---
+
+import Prompt from "@/components/docs/mdx/Prompt.astro";
+import Callout from "@/components/docs/mdx/Callout.astro";
+
+Claude Code and Codex can work on the same project through Istok. They share tasks, history and proof, but not their conversations. This page covers how to tell them apart, how to hand work over, and what to do when an agent disappears mid-task.
+
+## Give each agent an identity
+
+Every MCP connection runs as one actor. The `--actor-id` you set when connecting the agent is that actor's stable identity, and `--actor-name` is how it is shown:
+
+```sh
+istok mcp --actor-id codex --actor-name "Codex"
+```
+
+Runs, validations and history entries carry the actor, so the task page shows that Codex made the first attempt and Claude Code the second. Use a different ID for each agent product. `ISTOK_AGENT_ID` and `ISTOK_AGENT_NAME` set the same values from the environment.
+
+If you leave out `--actor-id`, Istok generates a new identity for every MCP process, shown as "MCP Agent". That works, but an agent restarted later counts as a different actor and cannot resume its own open run.
+
+The identity is fixed when the MCP server starts. An agent cannot switch to another actor in the middle of a session.
+
+## Hand work over
+
+There is no handoff document to write. The task already holds the description, progress notes, comments, earlier runs and their validations. Ask the current agent to leave a clean state:
+
+<Prompt>Record what you found on task 18 and stop working on it. Claude Code will take over.</Prompt>
+
+It adds a note and finishes its run, which frees the task. Then, in the other agent:
+
+<Prompt>Pick up task 18 in Istok. Read what the previous attempt found first.</Prompt>
+
+The new agent claims the task, which starts a second run with context assembled for the code as it is now. Both attempts stay on the task page.
+
+## When a run is left behind
+
+An active run holds a lease. Each heartbeat from the agent extends it; by default a lease lasts 15 minutes. If the session crashes or you close it without finishing, the heartbeats stop, the lease expires, and the run becomes **stale**. The task still shows as in progress.
+
+You have three ways out:
+
+- **Resume with the same agent.** Start a new session of the same agent and ask it to continue. Because the actor matches, it can recover the run and keep going with a new lease.
+- **Let another claim take it.** When any agent claims the task, Istok closes the stale run as `abandoned` and starts a fresh attempt.
+- **Abandon it yourself.** Use **Abandon** in the [web UI](/docs/en/guides/web-ui#abandon-a-stale-run), or `istok run abandon` in a terminal. The task is released and the run stays in the history.
+
+<Prompt>Continue task 20. Your previous session crashed.</Prompt>
+
+Abandoning does not need the run's lease, so it works when the agent is gone. The UI refuses to abandon a run whose agent is still sending heartbeats. Through MCP, abandoning is only available to agents started with `--profile supervisor` or `admin`; the standard setup does not include it.
+
+## Working in parallel
+
+Istok keeps parallel agents from colliding on the same task: a task with a live run cannot be claimed again, even by the same agent. Dependencies help too. When task #19 depends on #10, nobody can claim #19 until #10 is done, and it does not appear among the ready tasks.
+
+<Prompt>Show me the tasks that are ready to start.</Prompt>
+
+<Callout type="warning" title="Istok coordinates tasks, not files">Two agents in the same checkout can still edit the same files. Give parallel agents unrelated tasks, and check the runs feed in the web UI to see who is working on what.</Callout>
+
+Several sessions of the same agent share one actor ID. That is fine: each claim gets its own run and lease, so their attempts stay separate.
+
+See [Tasks and runs](/docs/en/how-istok-works/tasks-and-runs) for how claims, leases and run states fit together.

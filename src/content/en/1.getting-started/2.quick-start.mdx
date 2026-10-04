@@ -1,0 +1,123 @@
+---
+title: Quick start
+description: Install Istok, connect your coding agent, and watch it record its first task in about five minutes.
+---
+
+import Tabs from "@/components/docs/mdx/Tabs.astro";
+import Tab from "@/components/docs/mdx/Tab.astro";
+import Prompt from "@/components/docs/mdx/Prompt.astro";
+import BrowserFrame from "@/components/landing/BrowserFrame.astro";
+import taskLight from "@/assets/screenshots/task-light.webp";
+import taskDark from "@/assets/screenshots/task-dark.webp";
+
+In about five minutes your agent will record its work in Istok: a task, the attempt, and the checks that prove the result. You will see all of it in the browser.
+
+## 1. Install
+
+```sh
+curl -fsSL https://get.istok.sh | sh
+istok version
+```
+
+This puts `istok` in `~/.local/bin` on Linux or macOS. See [Installation](/docs/en/getting-started/installation) for other options.
+
+## 2. Connect your agent
+
+Add Istok as an MCP server once, for your user. The same connection then works in every project. The actor ID tells Istok which agent did the work.
+
+<Tabs labels={["Claude Code", "Codex", "Cursor", "Other MCP clients"]} group="agent">
+<Tab>
+
+```sh
+claude mcp add --transport stdio --scope user istok -- \
+  istok mcp --actor-id claude --actor-name "Claude Code"
+```
+
+Check it with `/mcp` inside Claude Code.
+
+</Tab>
+<Tab>
+
+```sh
+codex mcp add istok -- \
+  istok mcp --actor-id codex --actor-name "Codex"
+```
+
+</Tab>
+<Tab>
+
+Add this to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "istok": {
+      "command": "istok",
+      "args": ["mcp", "--actor-id", "cursor", "--actor-name", "Cursor"]
+    }
+  }
+}
+```
+
+</Tab>
+<Tab>
+
+Any MCP client that starts a local stdio server works. Run this command:
+
+```sh
+istok mcp --actor-id my-agent --actor-name "My Agent"
+```
+
+For example, Antigravity CLI reads the same `mcpServers` JSON as Cursor from `~/.gemini/config/mcp_config.json`.
+
+</Tab>
+</Tabs>
+
+## 3. Tell the agent when to use it
+
+MCP makes the tools available. Instructions tell the agent when to use them. Add this block to your global instructions: `~/.claude/CLAUDE.md` for Claude Code, `~/.codex/AGENTS.md` for Codex, User Rules in Cursor settings.
+
+```md
+## Working with Istok
+
+Use Istok MCP tools for non-trivial work in repositories registered with Istok.
+
+- Before starting, resolve the current project in Istok. If it is not registered, tell me and do not register it unless I ask.
+- Reuse an existing task when one fits; otherwise create a focused task. Do not create tasks for questions or tiny edits.
+- Claim the task before implementing, and record meaningful progress, decisions and blockers.
+- Validate the result through Istok and record the evidence. Complete the task only after validation passes.
+- Do not copy Istok task state into TODO files or plan documents.
+```
+
+A longer version is in [Working with your agent](/docs/en/guides/working-with-agents#when-the-agent-forgets-to-use-istok).
+
+## 4. Register the project
+
+Start the agent in your repository and ask:
+
+<Prompt reply="Registered acme-api in Istok.">Register this project in Istok.</Prompt>
+
+The agent registers the directory it was started in. Istok writes nothing into the repository. From a terminal, `istok init` does the same.
+
+## 5. Give it a real task
+
+Ask for something you would ask anyway:
+
+<Prompt>GET /orders/{"{id}"} returns 500 when the order does not exist. Make it return 404 and keep 500 for other errors.</Prompt>
+
+The agent creates a task, claims it, works, runs the tests through Istok, and completes the task with that evidence. For a quick question it just answers.
+
+## 6. See what happened
+
+```sh
+istok ui
+```
+
+Your browser opens `http://127.0.0.1:7700`. Open the task to see its history, each run, and the checks behind "done".
+
+<BrowserFrame light={taskLight} dark={taskDark} alt="A task page in the Istok web UI with acceptance criteria, history and two runs" url="127.0.0.1:7700/projects/acme-api/tasks/18" class="not-prose my-8" sizes="(min-width: 1024px) 720px, 100vw" />
+
+## Next
+
+- [Working with your agent](/docs/en/guides/working-with-agents) — what to say to continue, hand over, and finish with proof.
+- [Web UI](/docs/en/guides/web-ui) — everything the UI shows.

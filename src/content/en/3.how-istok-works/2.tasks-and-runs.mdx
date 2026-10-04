@@ -1,0 +1,80 @@
+---
+title: Tasks and runs
+description: How Istok separates the work to be done from each attempt to do it, and what happens when an agent session ends mid-task.
+---
+
+import BrowserFrame from "@/components/landing/BrowserFrame.astro";
+import taskLight from "@/assets/screenshots/task-light.webp";
+import taskDark from "@/assets/screenshots/task-dark.webp";
+
+A task is what needs to be done. A run is one attempt to do it. This page explains both, and how Istok notices when an agent walked away from an attempt.
+
+## Why two things
+
+Work rarely finishes in one go. A session ends, a check fails, another change has to land first, or a different agent takes over. If the task and the attempt were the same record, every interruption would lose history or leave a mess.
+
+So Istok keeps them apart:
+
+```text
+Task #12  "Return 404 for missing orders"
+ ├── Run A   Claude Code   abandoned    (session closed)
+ ├── Run B   Codex         failed       (tests failed)
+ └── Run C   Codex         succeeded    → task done
+```
+
+The task stays open across attempts. Each run keeps its own record of what happened.
+
+## Tasks
+
+A task holds a title, a description, acceptance criteria, notes, and a history of everything that happened to it: comments, progress updates, dependency changes, and runs.
+
+Agents create tasks for substantial work, such as features, bug fixes, refactors, and investigations, after checking that a matching task does not already exist. Questions, code reading, and tiny edits do not need a task.
+
+A task is always in one of these states:
+
+* **Ready** — open, not blocked, and nobody is working on it.
+* **Blocked** — it depends on another task that is not done yet, or it was marked blocked.
+* **In progress** — it has an active run whose lease has not expired.
+* **Done** — completed, normally with validation evidence. See [Validation](/docs/en/how-istok-works/validation).
+
+Dependencies let agents see which work can start now and which must wait. Progress updates record meaningful steps, such as a decision, a discovered blocker, or a finished part, not every small edit.
+
+<BrowserFrame light={taskLight} dark={taskDark} alt="A task page in the Istok web UI with its description, history, dependencies and runs" url="127.0.0.1:7700" class="not-prose my-8" sizes="(min-width: 1024px) 720px, 100vw" />
+
+## Runs
+
+An agent claims a task when it starts implementing. The claim creates a run and stores a snapshot of the context the agent received for this attempt (see [Context and knowledge](/docs/en/how-istok-works/context-and-knowledge)).
+
+A run records:
+
+* which agent made the attempt (its actor identity);
+* the Git branch and commit it started from;
+* commands it ran and their output;
+* validations and artifacts;
+* a final status and summary: `succeeded`, `failed`, `blocked`, or `cancelled`.
+
+A run that is closed without finishing becomes `abandoned`. Finished and abandoned runs stay in the task's history.
+
+## Leases and stale runs
+
+While a run is active, it holds a **lease**. The agent extends it by sending heartbeats as it works. Only the agent holding the current lease can run commands in the run or finish it.
+
+If a session crashes or is closed, heartbeats stop and the lease expires. The run is then **stale**: still active on paper, but nobody is working on it.
+
+A stale run does not block the task forever:
+
+* the same agent can **recover** the run and continue with a new lease;
+* the next claim of the task closes the stale run as `abandoned` and starts a fresh attempt;
+* you can **abandon** it yourself from the web UI or with `istok run abandon`.
+
+Abandoning a run keeps it in the history and leaves the task open.
+
+## Work outlives the session
+
+Because tasks and runs live in the project, not in the chat, a new session can ask Istok what is open, read the task's progress and earlier runs, and continue. Another agent can do the same; agents share project state, not conversation history.
+
+How to ask for this, and how to hand work between Claude Code and Codex safely, is covered in [Working with your agent](/docs/en/guides/working-with-agents) and [Several agents, one project](/docs/en/guides/multiple-agents).
+
+## Revisions
+
+Tasks and runs carry a revision number. A change that names an outdated revision is rejected instead of overwriting newer state, so two agents cannot silently undo each other's updates. You only see this when you use the CLI directly; the [`istok task`](/docs/en/reference/task) and [`istok run`](/docs/en/reference/run) references show where it applies.
