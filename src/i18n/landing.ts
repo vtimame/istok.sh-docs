@@ -86,7 +86,7 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     workflow: {
       title: ["Describe the problem.", "Istok keeps the work."],
-      body: "Your agent creates the task, claims it, records progress and validates the result through MCP, without turning task management into your job.",
+      body: "No need to manage tasks by hand. Your agent creates the task, claims it, records progress and validates the result.",
     },
     history: {
       title: ["See exactly", "what happened."],
@@ -187,7 +187,7 @@ export const landing: Record<Locale, LandingStrings> = {
     },
     workflow: {
       title: ["Опишите задачу.", "Istok сохранит работу."],
-      body: "Агент сам создаёт задачу, берёт её в работу, записывает прогресс и проверяет результат через MCP. Вести задачи вручную не придётся.",
+      body: "Не нужно вести задачи руками. Агент сам создаёт задачу, берёт её в работу, записывает прогресс и проверяет результат.",
     },
     history: {
       title: ["Видно всё,", "что произошло."],
