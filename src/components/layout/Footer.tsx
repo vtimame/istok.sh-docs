@@ -54,7 +54,7 @@ interface FooterLinksProps {
 function FooterLinks({ title, links, external }: FooterLinksProps) {
   return (
     <div>
-      <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground/70">
+      <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
         {title}
       </div>
 
