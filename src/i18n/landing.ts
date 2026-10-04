@@ -123,7 +123,7 @@ export const landing: Record<Locale, LandingStrings> = {
       steps: [
         {
           title: "Install",
-          body: "One binary for Linux and macOS, verified on download.",
+          body: "One binary for Linux and macOS, no admin rights needed.",
           code: "curl -fsSL https://get.istok.sh | sh",
         },
         {
@@ -133,7 +133,7 @@ export const landing: Record<Locale, LandingStrings> = {
         },
         {
           title: "Register your project",
-          body: "Open the agent in your repository and ask. It registers the project through MCP; nothing is written into the repository.",
+          body: "Open the agent in your repository and ask: it registers the project through MCP. Nothing is written into the repository.",
           code: "Register this project in Istok.",
           prompt: true,
         },
@@ -215,11 +215,11 @@ export const landing: Record<Locale, LandingStrings> = {
       ],
     },
     start: {
-      title: ["Готово к работе", "за минуту."],
+      title: ["Начать —", "дело минуты."],
       steps: [
         {
           title: "Установите",
-          body: "Один бинарник для Linux и macOS, подпись проверяется при загрузке.",
+          body: "Один бинарник для Linux и macOS, без прав администратора.",
           code: "curl -fsSL https://get.istok.sh | sh",
         },
         {
@@ -229,7 +229,7 @@ export const landing: Record<Locale, LandingStrings> = {
         },
         {
           title: "Зарегистрируйте проект",
-          body: "Откройте агента в репозитории и попросите. Он зарегистрирует проект через MCP, в сам репозиторий ничего не записывается.",
+          body: "Откройте агента в репозитории и попросите — он зарегистрирует проект через MCP. В сам репозиторий ничего не записывается.",
           code: "Зарегистрируй этот проект в Istok.",
           prompt: true,
         },
