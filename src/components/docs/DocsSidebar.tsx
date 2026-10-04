@@ -9,7 +9,7 @@ interface DocsSidebarProps {
 export function DocsSidebar({ groups, pathname }: DocsSidebarProps) {
   return (
     <aside className="hidden border-r border-border/60 lg:block">
-      <div className="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto px-6 py-8">
+      <div className="sticky top-14 h-[calc(100vh-3.5rem)] -ml-2 overflow-y-auto py-8 pr-6 pl-4">
         <DocsNavigation groups={groups} pathname={pathname} />
       </div>
     </aside>

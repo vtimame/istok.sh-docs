@@ -60,7 +60,7 @@ export function DocsMobileNav({ groups, strings, pathname }: DocsMobileNavProps)
             <DocsSearch strings={strings} onNavigate={close} />
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6">
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6">
             <DocsNavigation groups={groups} pathname={pathname} onNavigate={close} />
           </div>
         </SheetContent>

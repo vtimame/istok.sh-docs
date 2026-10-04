@@ -35,7 +35,7 @@ export function DocsNavigation({ groups, pathname, onNavigate }: DocsNavigationP
                   onClick={onNavigate}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "block rounded-md px-2 py-1.5 text-sm transition-colors",
+                    "-mx-2 block rounded-md px-2 py-1.5 text-sm transition-colors",
                     active
                       ? "bg-muted font-medium text-foreground"
                       : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
