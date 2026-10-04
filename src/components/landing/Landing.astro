@@ -98,7 +98,8 @@ const alternateHref = homeHref(lang === "en" ? "ru" : "en");
         }
       }
     },
-    { rootMargin: "0px 0px -10% 0px" },
+    // Reveal as soon as any part shows, so a section peeking under the hero is not left blank.
+    { threshold: 0 },
   );
 
   document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));

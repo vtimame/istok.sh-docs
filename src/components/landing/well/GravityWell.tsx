@@ -54,7 +54,6 @@ function luminance(hex: string) {
   return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
 }
 
-const icons = orbitingAgents.map((agent) => (agent.icon ? new Path2D(agent.icon) : null));
 
 export function GravityWell({ className }: GravityWellProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -85,7 +84,7 @@ export function GravityWell({ className }: GravityWellProps) {
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
 
-      radius = Math.min(width, height) * 0.13;
+      radius = Math.min(width, height) * 0.115;
     };
 
     // A point on an orbit, in canvas pixels.
@@ -99,7 +98,7 @@ export function GravityWell({ className }: GravityWellProps) {
       if (color === "ink") return palette.ink;
 
       const light = luminance(color);
-      if ((palette.dark && light < 0.2) || (!palette.dark && light > 0.8)) return palette.ink;
+      if ((palette.dark && light < 0.04) || (!palette.dark && light > 0.85)) return palette.ink;
       return color;
     };
 
@@ -193,39 +192,42 @@ export function GravityWell({ className }: GravityWellProps) {
       context.globalAlpha = 1;
     };
 
-    // Agents: a round badge with the agent's mark, riding its ring.
-    const drawAgent = (index: number, reveal: number, angle: number) => {
+    // Agents: a dot in the agent's color with its name, placed outwards from
+    // the center so labels never cover the mark.
+    const drawAgent = (index: number, position: { x: number; y: number }, reveal: number) => {
       const agent = orbitingAgents[index];
-      const { x, y } = onOrbit(agent.orbit * reveal, angle);
-      const badge = 17;
+      const color = agentColor(index);
+      const opacity = clamp(reveal * 1.4);
+
+      const dx = position.x - width / 2;
+      const dy = position.y - height / 2;
+      const distance = Math.hypot(dx, dy) || 1;
+      const nx = dx / distance;
+      const ny = dy / distance;
 
       context.save();
-      context.globalAlpha = clamp(reveal * 1.4);
-      context.translate(x, y);
 
-      context.fillStyle = palette.card;
-      context.strokeStyle = palette.border;
-      context.lineWidth = 1;
+      const halo = context.createRadialGradient(position.x, position.y, 0, position.x, position.y, 12);
+      halo.addColorStop(0, color);
+      halo.addColorStop(1, "transparent");
+      context.globalAlpha = 0.3 * opacity;
+      context.fillStyle = halo;
       context.beginPath();
-      context.arc(0, 0, badge, 0, Math.PI * 2);
+      context.arc(position.x, position.y, 12, 0, Math.PI * 2);
       context.fill();
-      context.stroke();
 
-      const color = agentColor(index);
-      const icon = icons[index];
-      if (icon) {
-        const iconSize = badge * 1.1;
-        context.translate(-iconSize / 2, -iconSize / 2);
-        context.scale(iconSize / 24, iconSize / 24);
-        context.fillStyle = color;
-        context.fill(icon);
-      } else {
-        context.fillStyle = color;
-        context.font = `600 10px "Geist Mono", ui-monospace, monospace`;
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText(">_", 0, 0.5);
-      }
+      context.globalAlpha = opacity;
+      context.fillStyle = color;
+      context.beginPath();
+      context.arc(position.x, position.y, 4, 0, Math.PI * 2);
+      context.fill();
+
+      context.font = `11px "Geist Mono", ui-monospace, monospace`;
+      context.textBaseline = "middle";
+      context.textAlign = nx >= 0 ? "left" : "right";
+      context.fillStyle = palette.muted;
+      context.globalAlpha = 0.9 * opacity;
+      context.fillText(agent.name, position.x + nx * 10 + (nx >= 0 ? 2 : -2), position.y + ny * 10);
 
       context.restore();
     };
@@ -248,7 +250,9 @@ export function GravityWell({ className }: GravityWellProps) {
       drawOrbits(elapsed);
       drawSwirls(light);
       drawMark(elapsed, now);
-      if (reveal > 0) orbitingAgents.forEach((_, index) => drawAgent(index, reveal, angles[index]));
+      if (reveal > 0) {
+        orbitingAgents.forEach((agent, index) => drawAgent(index, onOrbit(agent.orbit * reveal, angles[index]), reveal));
+      }
     };
 
     // The loop runs only while the canvas is on screen.
@@ -314,7 +318,7 @@ export function GravityWell({ className }: GravityWellProps) {
       aria-hidden="true"
       className={cn("block size-full text-foreground", className)}
       // The edges fade out, so the visual has no frame.
-      style={{ maskImage: "radial-gradient(ellipse 50% 50% at 50% 50%, black 70%, transparent 100%)" }}
+      style={{ maskImage: "radial-gradient(ellipse 50% 50% at 50% 50%, black 82%, transparent 100%)" }}
     />
   );
 }

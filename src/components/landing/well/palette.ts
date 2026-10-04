@@ -3,6 +3,7 @@
 export interface Palette {
   dark: boolean;
   ink: string;
+  muted: string;
   card: string;
   border: string;
   streak: (shade: number) => string;
@@ -20,6 +21,7 @@ export function readPalette(element: HTMLElement): Palette {
   const dark = document.documentElement.classList.contains("dark");
   const style = getComputedStyle(element);
   const ink = style.color;
+  const muted = style.getPropertyValue("--muted-foreground").trim() || ink;
   const card = style.getPropertyValue("--card").trim() || "#fff";
   const border = style.getPropertyValue("--border").trim() || ink;
 
@@ -29,6 +31,7 @@ export function readPalette(element: HTMLElement): Palette {
   return {
     dark,
     ink,
+    muted,
     card,
     border,
     streak: (shade) => pick(shade),
