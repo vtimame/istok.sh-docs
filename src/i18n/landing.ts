@@ -25,14 +25,16 @@ export interface LandingStrings {
       projects: string;
       runs: string;
       tasks: string;
-      search: string;
+    };
+    mediaLabel: string;
+    media: {
+      browser: string;
       terminal: string;
     };
     alt: {
       projects: string;
       runs: string;
       tasks: string;
-      search: string;
     };
   };
   problem: {
@@ -74,14 +76,16 @@ export const landing: Record<Locale, LandingStrings> = {
         projects: "Projects",
         runs: "Runs",
         tasks: "Tasks",
-        search: "Search",
+      },
+      mediaLabel: "Show in",
+      media: {
+        browser: "Browser",
         terminal: "Terminal",
       },
       alt: {
         projects: "Projects page: nine projects with open, blocked and done task counts, one running and one stale run",
         runs: "Run feed: active, succeeded, stale and failed runs by Claude and Codex across projects",
         tasks: "Task list of the acme-api project with statuses and an agent working on task 20",
-        search: "Search palette finding tasks that mention orders",
       },
     },
     problem: {
@@ -190,14 +194,16 @@ export const landing: Record<Locale, LandingStrings> = {
         projects: "Проекты",
         runs: "Запуски",
         tasks: "Задачи",
-        search: "Поиск",
+      },
+      mediaLabel: "Где смотреть",
+      media: {
+        browser: "Браузер",
         terminal: "Терминал",
       },
       alt: {
         projects: "Страница проектов: девять проектов со счётчиками открытых, заблокированных и выполненных задач, один активный и один зависший запуск",
         runs: "Лента запусков: активные, успешные, зависшие и неудачные запуски Claude и Codex во всех проектах",
         tasks: "Список задач проекта acme-api со статусами и агентом, работающим над задачей 20",
-        search: "Палитра поиска находит задачи про заказы",
       },
     },
     problem: {

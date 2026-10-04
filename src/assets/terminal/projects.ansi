@@ -1,0 +1,15 @@
+[38;2;95;211;141m~/work[m $ istok project list
+[1;38;2;92;200;255mLocal projects[m
+
+ [38;2;124;132;148mNAME[m                [38;2;124;132;148mSTATE[m     [38;2;124;132;148mROOT[m
+ [1;38;2;92;200;255mauth-service[m        [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/auth-service[m
+ [1;38;2;92;200;255madmin-dashboard[m     [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/admin-dashboard[m
+ [1;38;2;92;200;255msearch-indexer[m      [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/search-indexer[m
+ [1;38;2;92;200;255mnotifications[m       [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/notifications[m
+ [1;38;2;92;200;255manalytics-pipeline[m  [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/analytics-pipeline[m
+ [1;38;2;92;200;255mmobile-app[m          [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/mobile-app[m
+ [1;38;2;92;200;255macme-api[m            [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/acme-api[m
+ [1;38;2;92;200;255mstorefront-web[m      [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/storefront-web[m
+ [1;38;2;92;200;255mbilling-worker[m      [38;2;95;211;141m● ACTIVE[m  [38;2;124;132;148m/home/alex/work/billing-worker[m
+
+[38;2;124;132;148m  9 total projects[m

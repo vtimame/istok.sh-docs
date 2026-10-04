@@ -1,0 +1,11 @@
+[38;2;95;211;141m~/work/acme-api[m $ istok task list
+[38;2;92;200;255macme-api[m [38;2;92;200;255m│[m [38;2;242;184;75m7 open tasks[m
+
+ [38;2;124;132;148m#[m    [38;2;124;132;148mSTATE[m          [38;2;124;132;148mTITLE[m                                          [38;2;124;132;148mBLOCKED BY[m
+ [38;2;242;184;75m#5[m   [38;2;242;184;75m! BLOCKED[m      Return 409 for duplicate SKUs                  —
+ [38;2;242;184;75m#10[m  [38;2;242;184;75m! BLOCKED[m      Migrate order IDs to UUIDv7                    —
+ [38;2;242;184;75m#11[m  [38;2;95;211;141m◆ READY[m        Index orders by customer                       —
+ [38;2;242;184;75m#15[m  [38;2;95;211;141m◆ READY[m        Add metrics for checkout latency               —
+ [38;2;242;184;75m#19[m  [38;2;242;184;75m! BLOCKED[m      Rate limit the checkout endpoint               —
+ [38;2;242;184;75m#20[m  [38;2;92;200;255m◐ IN PROGRESS[m  Retry temporary payment failures with backoff  —
+ [38;2;242;184;75m#21[m  [38;2;242;184;75m! BLOCKED[m      Document the refund flow                       [38;2;242;184;75m#20[m
