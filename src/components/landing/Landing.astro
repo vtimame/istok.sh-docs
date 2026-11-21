@@ -1,30 +1,11 @@
 ---
 import Header from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
 import EmptyLayout from "@/layouts/EmptyLayout.astro";
 
-import BrowserFrame from "./BrowserFrame.astro";
-import CtaSection from "./CtaSection.astro";
-import FeatureSection from "./FeatureSection.astro";
-import GetStartedSection from "./GetStartedSection.astro";
-import Hero from "./Hero.astro";
-import Showcase from "./Showcase.astro";
-import { AgentSession, type Session } from "./AgentSession";
-import { ThreadVisual } from "./ThreadVisual";
+import { HeroText } from "./HeroText";
 
-import { homeHref, locales, type Locale } from "@/i18n";
+import { docsHref, homeHref, locales, type Locale } from "@/i18n";
 import { landing } from "@/i18n/landing";
-import workEn from "@/assets/terminal/work.en.json";
-import workRu from "@/assets/terminal/work.ru.json";
-import memoryEn from "@/assets/terminal/memory.en.json";
-import memoryRu from "@/assets/terminal/memory.ru.json";
-
-import taskLight from "@/assets/screenshots/task-light.webp";
-import taskDark from "@/assets/screenshots/task-dark.webp";
-import contextLight from "@/assets/screenshots/context-light.webp";
-import contextDark from "@/assets/screenshots/context-dark.webp";
-import runLight from "@/assets/screenshots/run-light.webp";
-import runDark from "@/assets/screenshots/run-dark.webp";
 
 interface Props {
   lang: Locale;
@@ -33,12 +14,7 @@ interface Props {
 const { lang } = Astro.props;
 const strings = landing[lang];
 
-// The terminals replay sessions recorded in the page's language.
-const sessions = {
-  en: { work: workEn, memory: memoryEn },
-  ru: { work: workRu, memory: memoryRu },
-}[lang] as { work: Session; memory: Session };
-
+const repository = "https://github.com/vtimame/istok.sh";
 const alternates = Object.fromEntries(locales.map((locale) => [locale, homeHref(locale)]));
 const alternateHref = homeHref(lang === "en" ? "ru" : "en");
 ---
@@ -46,61 +22,36 @@ const alternateHref = homeHref(lang === "en" ? "ru" : "en");
 <EmptyLayout lang={lang} alternates={alternates}>
   <Header client:load lang={lang} alternateHref={alternateHref} />
 
-  <main>
-    <Hero lang={lang} strings={strings.hero} />
-    <Showcase strings={strings.showcase} />
-
-    <FeatureSection title={strings.workflow.title} body={strings.workflow.body}>
-      <AgentSession client:visible session={sessions.work} replayLabel={strings.workflow.replay} />
-    </FeatureSection>
-
-    <FeatureSection title={strings.memory.title} body={strings.memory.body} reverse>
-      <AgentSession client:visible session={sessions.memory} replayLabel={strings.workflow.replay} />
-    </FeatureSection>
-
-    <FeatureSection title={strings.history.title} body={strings.history.body}>
-      <BrowserFrame
-        light={taskLight}
-        dark={taskDark}
-        alt={strings.history.alt}
-        url="127.0.0.1:7700/projects/acme-api/tasks/18"
+  <main class="app-container flex min-h-[calc(100dvh-3.5rem)] flex-col justify-center gap-12 pt-14 pb-10">
+    <div class="max-w-2xl">
+      <HeroText
+        client:load
+        title={strings.title}
+        highlight={strings.highlight}
+        subtitle={strings.subtitle}
+        copyLabel={strings.copy}
+        copiedLabel={strings.copied}
+        docsLabel={strings.docs}
+        docsHref={docsHref(lang, "getting-started/introduction")}
       />
-    </FeatureSection>
+    </div>
 
-    <FeatureSection title={strings.context.title} body={strings.context.body} reverse>
-      <BrowserFrame light={contextLight} dark={contextDark} alt={strings.context.alt} url="127.0.0.1:7700/runs/…" />
-    </FeatureSection>
-
-
-    <FeatureSection title={strings.evidence.title} body={strings.evidence.body}>
-      <BrowserFrame light={runLight} dark={runDark} alt={strings.evidence.alt} url="127.0.0.1:7700/runs/…" />
-    </FeatureSection>
-
-    <FeatureSection title={strings.local.title} body={strings.local.body} reverse>
-      <ThreadVisual client:visible />
-    </FeatureSection>
-
-    <GetStartedSection lang={lang} strings={strings.start} />
-    <CtaSection lang={lang} strings={strings.cta} />
-  </main>
-
-  <Footer lang={lang} />
-</EmptyLayout>
-
-<script>
-  // Sections fade in once as they scroll into view; see [data-reveal] in global.css.
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-revealed");
-          observer.unobserve(entry.target);
-        }
+    <ul class="grid max-w-4xl gap-6 sm:grid-cols-3">
+      {
+        strings.points.map((point) => (
+          <li>
+            <p class="font-semibold">{point.title}</p>
+            <p class="mt-1 text-sm leading-6 text-muted-foreground">{point.body}</p>
+          </li>
+        ))
       }
-    },
-    // Reveal as soon as any part shows, so a section peeking under the hero is not left blank.
-    { threshold: 0 },
-  );
+    </ul>
 
-  document.querySelectorAll("[data-reveal]").forEach((element) => observer.observe(element));
-</script>
+    <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
+      <a class="hover:text-foreground" href={docsHref(lang, "getting-started/introduction")}>{strings.links.docs}</a>
+      <a class="hover:text-foreground" href={repository}>GitHub</a>
+      <a class="hover:text-foreground" href={`${repository}/blob/main/CHANGELOG.md`}>{strings.links.changelog}</a>
+      <a class="hover:text-foreground" href={`${repository}/blob/main/LICENSE`}>Apache-2.0</a>
+    </nav>
+  </main>
+</EmptyLayout>

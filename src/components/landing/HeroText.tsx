@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { buttonVariants } from "@/components/ui/button.tsx";
 import { cn } from "@/lib/utils.ts";
 import { CheckIcon, CopyIcon } from "lucide-react";
@@ -51,10 +51,8 @@ export function HeroText({ title, highlight, subtitle, copyLabel, copiedLabel, d
         className={`
           font-heading
           text-5xl font-bold leading-[1.02] tracking-[-0.035em]
-          hero-rise
           sm:text-6xl
         `}
-        style={{ "--rise-delay": "100ms" } as CSSProperties}
       >
         {title.map((line, index) => {
           const [before, after] = line.includes(highlight) ? line.split(highlight) : [line, null];
@@ -72,20 +70,16 @@ export function HeroText({ title, highlight, subtitle, copyLabel, copiedLabel, d
 
       <div
         className={`
-          hero-rise
           max-w-md text-muted-foreground
         `}
-        style={{ "--rise-delay": "500ms" } as CSSProperties}
       >
         {subtitle}
       </div>
 
       <div
         className={`
-          hero-rise
           flex flex-wrap items-center gap-3
         `}
-        style={{ "--rise-delay": "800ms" } as CSSProperties}
       >
         <div className="relative flex h-9 flex-1 items-center rounded-lg bg-emerald-500/10 px-4 pr-12 text-sm font-semibold text-emerald-500">
           <span className="select-none">$&nbsp;</span>

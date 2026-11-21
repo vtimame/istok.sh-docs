@@ -26,18 +26,6 @@ export interface UiStrings {
     themeToDark: string;
   };
   docs: DocsStrings;
-  footer: {
-    tagline: string;
-    product: string;
-    project: string;
-    documentation: string;
-    quickStart: string;
-    webUi: string;
-    cli: string;
-    releases: string;
-    issues: string;
-    changelog: string;
-  };
 }
 
 export const ui: Record<Locale, UiStrings> = {
@@ -45,7 +33,7 @@ export const ui: Record<Locale, UiStrings> = {
     meta: {
       title: "Istok — One workspace for every coding agent",
       description:
-        "Keep tasks, context and progress with your project, not inside an agent session. See what every agent did in a local web UI.",
+        "Keep tasks, progress and proof of done with your project, not inside an agent session, and continue on any of your machines.",
     },
     nav: {
       docs: "Docs",
@@ -65,25 +53,13 @@ export const ui: Record<Locale, UiStrings> = {
       onThisPage: "On this page",
       openNavigation: "Open documentation navigation",
     },
-    footer: {
-      tagline: "One workspace for every coding agent.",
-      product: "Product",
-      project: "Project",
-      documentation: "Documentation",
-      quickStart: "Quick start",
-      webUi: "Web UI",
-      cli: "CLI reference",
-      releases: "Releases",
-      issues: "Issues",
-      changelog: "Changelog",
-    },
   },
 
   ru: {
     meta: {
       title: "Istok — единое пространство для всех агентов",
       description:
-        "Задачи, контекст и прогресс хранятся вместе с проектом, а не в сессии агента. Всё, что сделали агенты, видно в локальном веб-интерфейсе.",
+        "Задачи, ход работы и доказательства хранятся вместе с проектом, а не в сессии агента, и продолжаются на любой вашей машине.",
     },
     nav: {
       docs: "Документация",
@@ -102,18 +78,6 @@ export const ui: Record<Locale, UiStrings> = {
       pages: "Страницы",
       onThisPage: "На этой странице",
       openNavigation: "Открыть навигацию по документации",
-    },
-    footer: {
-      tagline: "Единое пространство для всех агентов.",
-      product: "Продукт",
-      project: "Проект",
-      documentation: "Документация",
-      quickStart: "Быстрый старт",
-      webUi: "Веб-интерфейс",
-      cli: "Справочник CLI",
-      releases: "Релизы",
-      issues: "Задачи",
-      changelog: "Список изменений",
     },
   },
 };

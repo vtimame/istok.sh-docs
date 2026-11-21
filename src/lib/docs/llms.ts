@@ -6,7 +6,7 @@ const site = "https://istok.sh";
 
 export const intro = `# Istok
 
-> Istok is a local CLI, MCP server and web UI that keeps coding-agent work with your project instead of inside a conversation: tasks, runs, validations, context and knowledge live in a local SQLite database, so work survives across sessions and between agents.
+> Istok is a local CLI and MCP server that keeps coding-agent work with your project instead of inside a conversation: tasks, runs, validations, context and knowledge live in a local SQLite database, so work survives across sessions, between agents and, through a self-hosted sync hub, between devices.
 
 Install with \`curl -fsSL https://get.istok.sh | sh\`, run \`istok init\` in a repository, connect an agent to \`istok mcp\` and open \`istok ui\` to watch the work.`;
 

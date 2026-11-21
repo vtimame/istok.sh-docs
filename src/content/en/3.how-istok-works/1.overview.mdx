@@ -1,0 +1,92 @@
+---
+title: How Istok works
+description: Projects, tasks and runs, checks, and project memory — what Istok keeps and how an agent uses it.
+---
+
+This page explains the few ideas behind Istok: where it keeps things, how it separates work from attempts, how it records proof, and what an agent receives when it starts a task.
+
+## Projects
+
+A project is the box Istok keeps everything in for one repository: tasks, runs, checks, saved context, knowledge and the code index. Everything belongs to the project, not to a conversation or to a particular agent, so a new session or a different agent can pick up where the last one stopped.
+
+You register a repository once, usually by asking your agent ("Register this project in Istok") or with `istok init`. Registering a directory that is already a project returns the existing one.
+
+Istok finds the current project from the directory: the MCP server from the directory the agent was started in, CLI commands from your current directory. That is why one `istok mcp` entry in your user-level config works for every repository. Projects can be nested, for example an app inside a monorepo; the closest one wins.
+
+Istok writes nothing into your repository. All state is local:
+
+```text
+<data-home>/istok/
+├── istok.db      projects, tasks, runs, context, knowledge (SQLite)
+├── indexes/      code index, one directory per project
+├── artifacts/    files recorded by runs
+└── sync/         this device's hub membership and sync key, if you sync
+```
+
+On Linux `<data-home>` is `${XDG_DATA_HOME:-$HOME/.local/share}`; on macOS it is `$HOME/Library/Application Support`. Moved a repository? `istok project rebind` points the project at the new path, and its history stays attached.
+
+## Tasks and runs
+
+A task is what needs to be done. A run is one attempt to do it. Work rarely finishes in one go: a session ends, a check fails, or a different agent takes over. So Istok keeps them apart:
+
+```text
+Task #12  "Return 404 for missing orders"
+ ├── Run A   Claude Code   abandoned    (session closed)
+ ├── Run B   Codex         failed       (tests failed)
+ └── Run C   Codex         succeeded    → task done
+```
+
+A task holds a title, description, acceptance criteria, notes, progress, blockers, dependencies, linked commits and its handoffs. It is **ready**, **blocked** (waiting on another task or marked blocked), **in progress** (it has an active run) or **done**.
+
+A run starts when an agent starts the task. It records which agent made the attempt, the Git branch and commit it started from, the context it received, the commands it ran and its checks. It ends as `succeeded`, `failed`, `blocked` or `cancelled`, or as `abandoned` if it was left behind.
+
+While a run is active it holds a **lease**, and every Istok call of the agent extends it. If the agent goes quiet, the lease expires and the run becomes **stale**. The same agent continues it with its next call; another agent that starts the task closes it as `abandoned` and begins a fresh attempt; `istok run abandon` closes it at once. Abandoned runs stay in the history and the task stays open.
+
+Before a session ends, the agent writes a **handoff**: what is done, where it stopped, decisions, the next step. The next session that starts the task receives the latest handoff together with recent notes and earlier runs.
+
+Tasks and runs carry a revision number, so a change based on an outdated state is rejected instead of silently overwriting newer work.
+
+## Checks
+
+An agent saying "done, tests pass" is a claim. Istok lets the agent attach proof instead.
+
+- **Validation** — the agent runs a command such as `go test ./...` through Istok. Istok stores the command, the exit status and the output, and derives a passed or failed check from the result.
+- **Reported evidence** — a check made elsewhere, such as a CI pipeline or a manual test, recorded by the agent. It is marked as attested, so it is never confused with a command Istok ran itself.
+
+A task is completed with a reference to a passed check of its run, so "done" points at evidence. When no check applies, for example a documentation-only change, the agent must say so and give a reason, and the reason is stored. A failed check throws nothing away: the agent fixes the problem and checks again, and the failure stays visible in the history.
+
+Command output is bounded (up to 1 MiB per stream), commands get an allowlisted environment, and commands Istok classifies as dangerous need an explicit override with a reason.
+
+## Context and knowledge
+
+Istok remembers two kinds of things about a project, so you do not repeat them every session:
+
+| | Context records | Knowledge items |
+| --- | --- | --- |
+| What | Short rules, constraints, decisions, notes | Longer documents: architecture, domain, runbooks, findings |
+| Reaches a run | Selected records are copied in | Only titles and summaries; the agent reads the full item when needed |
+| Changes | Edited in place, with revisions | Draft, review, promote, supersede |
+
+When an agent starts a task, Istok assembles a context snapshot for the run:
+
+```text
+always records + records named by ID + best-matching ranked records
+        +
+code retrieved for this task from the local index
+        +
+knowledge briefing: titles and summaries of current knowledge
+        ↓
+context snapshot  →  stored with the run
+```
+
+The snapshot is fixed: if a rule changes mid-run, that run keeps what it started with. It is also bounded, so the agent's context window does not fill with unrelated material: 16 KiB and 12 records for saved context, 32 KiB for code, plus a briefing of up to 20 knowledge items. `always` records go in first. If required records do not fit, starting the task fails and names them rather than silently dropping your rules.
+
+Because agents treat knowledge as current truth, writing it and accepting it are separate steps:
+
+```text
+draft  →  reviewed draft  →  current  →  superseded
+```
+
+Only drafts can be edited, and editing clears the review. Only current items appear in briefings. A draft can carry provenance — the tasks, runs or files it came from — so a reviewer can check it against its sources.
+
+How to save rules and knowledge, and check what an agent saw, is in [Working with your agent](/docs/en/guides/working-with-agents). How projects move between machines is in [Sync between devices](/docs/en/guides/another-device).

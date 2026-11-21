@@ -1,6 +1,6 @@
 ---
 title: Working with your agent
-description: What to say to your coding agent in everyday situations, and what Istok records each time.
+description: What to say to your coding agent in everyday situations, what Istok records each time, and how several agents share one project.
 ---
 
 import Prompt from "@/components/docs/mdx/Prompt.astro";
@@ -16,7 +16,7 @@ Describe the work the way you normally would. You do not need to mention Istok.
 
 <Prompt>GET /orders/{"{id}"} returns 500 when the order does not exist. Unknown orders should get 404; other errors must stay 500.</Prompt>
 
-**What Istok records:** a task such as #18 "Return 404 for missing orders" with a description and acceptance criteria. When the agent starts coding it claims the task, which opens a run under the agent's actor ID and saves exactly what context it was given.
+**What Istok records:** a task such as #18 "Return 404 for missing orders" with a description and acceptance criteria. When the agent starts coding it starts the task, which opens a run under the agent's actor ID and saves exactly what context it was given.
 
 For a question or a one-line fix the agent just answers. Tasks are for work that is worth picking up later.
 
@@ -28,51 +28,105 @@ Ask about the project instead of scrolling back through chats.
 
 <Prompt>What happened with task 18? Who worked on it and why did the first attempt fail?</Prompt>
 
-**What Istok records:** nothing. The agent reads tasks, their history and runs. You can see the same in the [web UI](/docs/en/guides/web-ui), or with `istok task list` and `istok task show 18` in a terminal.
+**What Istok records:** nothing. The agent reads tasks, their history and runs. In a terminal, `istok task list` and `istok task show 18` show the same.
 
 ## Continue in a new session
 
-A new chat knows nothing about the old one. Point it at the task.
+Before a session ends or its context is compacted, the agent writes a **handoff**: what is done, where it stopped, the decisions it made and the next step. With `istok hooks install claude --stop` (or `codex`), the agent is reminded to write one when it stops in the middle of a task.
+
+A new chat knows nothing about the old one, but with the hooks installed it is shown the interrupted work as soon as it starts. Otherwise, point it at the task:
 
 <Prompt>Continue task 20.</Prompt>
 
 <Prompt>Continue the unfinished work on payment retries.</Prompt>
 
-**What Istok records:** the agent reads the task's progress notes and earlier runs, then continues. If its previous attempt is still open it recovers that run; otherwise it claims the task again and a new run starts with fresh context.
-
-## Remember a rule
-
-When you correct the agent and want the correction to stick, say so.
-
-<Prompt>Remember for this project: public API fields use snake_case.</Prompt>
-
-<Prompt>Make it a rule that every change to the API is validated with the API test suite.</Prompt>
-
-**What Istok records:** a saved context record (a decision, constraint or instruction). Instructions reach every future run; other records are delivered when they match the task. See [Project rules and knowledge](/docs/en/guides/rules-and-knowledge).
+**What Istok records:** the agent starts the task again and receives the latest handoff, recent notes and earlier runs. If its previous run is still active it continues that run; otherwise a new run starts with fresh context. `istok resume` prints the same interrupted work in a terminal.
 
 ## Finish with proof
 
 The instructions already ask the agent to validate before completing. You can be explicit about what counts as proof.
 
-<Prompt reply="go test ./... passed (validation recorded). Run finished as succeeded, task 18 is done.">Run the full test suite through Istok and close the task only if it passes.</Prompt>
+<Prompt reply="go test ./... passed (validation recorded). Task 18 is done.">Run the full test suite through Istok and close the task only if it passes.</Prompt>
 
-**What Istok records:** a validation with the command, its result and its output, attached to the run. The task is completed with a reference to that run and validation, so "done" points at evidence. If a check fails, the failure stays in the history and the task stays open.
+**What Istok records:** a check with the command, its result and its output, attached to the run. The task is completed with a reference to that check, so "done" points at evidence. If a check fails, the failure stays in the history and the task stays open.
 
-When no check applies, for example a documentation change, the agent has to give an explicit reason to finish without validation. That reason is recorded too.
+A check made elsewhere, such as a CI pipeline or a manual test, can be recorded too; Istok marks it as reported by the agent rather than run by Istok. When no check applies, for example a documentation change, the agent has to give an explicit reason to finish without one. That reason is recorded too.
 
-<Callout type="tip">To see how a task was verified, open its run in the web UI and look at **Validations**.</Callout>
+## Remember a rule
 
-## Hand over to another agent
+When you correct the agent and want the correction to stick, tell it to remember the rule:
 
-Ask the current agent to leave a clean state, then start the other one.
+<Prompt>Remember for this project: public API fields use snake_case.</Prompt>
 
-<Prompt>Record what you found on task 18 and stop working on it. Claude Code will take over.</Prompt>
+The agent saves it as a rule for the project, and later finds and changes saved rules when you ask. From a terminal, add one yourself:
 
-The first agent adds a progress note or comment and finishes its run, which frees the task. Then, in the other agent:
+```sh
+istok context add "API naming convention" --kind decision \
+  --body "Public API fields use snake_case."
+```
 
-<Prompt>Pick up task 18 in Istok. Read what the previous attempt found first.</Prompt>
+A rule is a short context record with a kind: `note`, `decision`, `constraint` or `instruction`. Its delivery mode decides when an agent receives it:
 
-**What Istok records:** a second run on the same task under the new actor (`claude`). Both attempts, with their summaries and validations, stay on the task page. See [Several agents, one project](/docs/en/guides/multiple-agents) for identities and interrupted runs.
+- **`always`** — every run gets it. The default for instructions. Keep these short, because they take space in every run.
+- **`ranked`** — included when it matches the task. The default for the other kinds.
+- **`manual`** — never included automatically, only when asked for by ID.
+
+`istok context list` shows what the project has saved; `istok context disable` switches an instruction off without deleting it.
+
+## Keep longer knowledge
+
+Knowledge is for material too long to send with every task: how the refund flow works, why orders use UUIDv7, how to rotate keys. Each run gets only the titles and summaries of current items, and the agent reads a full item when the task needs it.
+
+The usual way to create it is at the end of an investigation (this needs `--tools full`):
+
+<Prompt>Write up what you learned about the refund flow as a knowledge draft, with this task as the source.</Prompt>
+
+A new item is a **draft**. Agents rely on it only after you review it and promote it to **current**:
+
+```sh
+istok knowledge show ID
+istok knowledge review ID --expected-revision 1 \
+  --note "Checked against internal/refunds on main"
+istok knowledge promote ID --expected-revision 2
+```
+
+Editing a draft clears its review. Current items cannot be edited: when facts change, a new reviewed draft supersedes the old one. `istok knowledge list` and `istok knowledge search` browse what exists.
+
+## Check what an agent saw
+
+When an agent ignored a rule, find out whether it received it.
+
+- `istok context preview 18` shows what starting task 18 would deliver, without starting a run.
+- `istok run show RUN_ID` shows the context saved for a run, next to its commands and checks.
+- `istok context doctor` reports expired, oversized and duplicate records.
+
+## Several agents, one project
+
+Claude Code and Codex can work on the same project. They share tasks, history and proof, but not their conversations.
+
+**Give each agent an identity.** The `--actor-id` you set when connecting the agent is its stable identity; `--actor-name` is how it is shown. Runs and history entries carry it, so a task shows that Codex made the first attempt and Claude Code the second. If you leave out `--actor-id`, every MCP process gets a new identity, and a restarted agent cannot continue its own run.
+
+**Hand work over.** There is no document to write: the task already holds the description, notes, earlier runs and the handoff.
+
+<Prompt>Stop working on task 18, I'll hand it to Claude Code.</Prompt>
+
+The agent writes a handoff and ends its run, leaving the task open. Then, in the other agent:
+
+<Prompt>Pick up task 18 in Istok. Read the handoff first.</Prompt>
+
+The other agent starts the task at once and gets the handoff.
+
+**When a run is left behind.** An agent that just went quiet did not end its run. An active run holds a lease, and every Istok call of the agent extends it. If the agent goes quiet for 15 minutes, the lease expires and the run becomes **stale**. Then:
+
+- **the same agent** continues its run with its next call, for example after you ask it to continue the task;
+- **another agent** that starts the task closes the stale run as `abandoned` and begins a fresh attempt;
+- **you** can abandon it at once with `istok run abandon`. The run stays in the history and the task is released.
+
+**Working in parallel.** A task with a live run cannot be taken by another agent, and a task that depends on an unfinished one does not appear among the ready tasks.
+
+<Prompt>Show me the tasks that are ready to start.</Prompt>
+
+<Callout type="warning" title="Istok coordinates tasks, not files">Two agents in the same checkout can still edit the same files. Give parallel agents unrelated tasks.</Callout>
 
 ## When the agent forgets to use Istok
 
@@ -84,7 +138,7 @@ Sometimes an agent starts coding without a task. Usually one of three things is 
 
 To correct it in the moment:
 
-<Prompt>Use Istok for this: find or create a task, claim it, and record validation before you finish.</Prompt>
+<Prompt>Use Istok for this: find or create a task, start it, and record validation before you finish.</Prompt>
 
 If it keeps happening, replace the short block from the quick start with this longer version in your global instructions (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, or User Rules in Cursor):
 
@@ -109,10 +163,11 @@ If the repository is not registered, tell the user, do not initialize it automat
 Use a task for feature work, bug fixes, refactoring, migrations, investigations, and other non-trivial changes. Do not create tasks for questions, explanations, tiny edits, or quick code reading.
 
 1. Reuse a relevant task, or create a focused one without waiting to be asked.
-2. Claim the task and use the run for the current attempt.
+2. Start the task and use the run for the current attempt.
 3. Record meaningful progress, blockers, dependencies, and decisions as they happen.
-4. Validate the result and record the commands, results, and evidence.
-5. Complete the task only after the result is implemented and verified. Implementation alone is not completion.
+4. Before you stop or the context is compacted, write a handoff.
+5. Validate the result and record the commands, results, and evidence.
+6. Complete the task only after the result is implemented and verified. Implementation alone is not completion.
 
 ### Context and knowledge
 
