@@ -19,7 +19,7 @@ Istok is a CLI and an MCP server in one binary. Your agent talks to it over MCP 
 
 - **tasks** — what needs to be done, with acceptance criteria, progress and blockers;
 - **runs** — each attempt at a task, which agent made it and what context it received;
-- **checks** — the commands and tests that verified the result, with their output;
+- **checks** — the tests and builds that verified the result. Istok runs them itself and keeps the exit code and output; a check the agent only reported is marked as its word;
 - **handoffs** — what is done, where the work stopped and what comes next;
 - **project rules and knowledge** — conventions and documentation that the next session receives or can look up.
 

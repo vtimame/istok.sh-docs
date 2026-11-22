@@ -31,9 +31,9 @@ export interface UiStrings {
 export const ui: Record<Locale, UiStrings> = {
   en: {
     meta: {
-      title: "Istok — One workspace for every coding agent",
+      title: "Istok — Your agent says “done”. Istok keeps the proof.",
       description:
-        "Keep tasks, progress and proof of done with your project, not inside an agent session, and continue on any of your machines.",
+        "Istok runs your coding agent's checks itself and keeps them with the task and the project, not inside an agent session. Any agent, any of your machines.",
     },
     nav: {
       docs: "Docs",
@@ -57,9 +57,9 @@ export const ui: Record<Locale, UiStrings> = {
 
   ru: {
     meta: {
-      title: "Istok — единое пространство для всех агентов",
+      title: "Istok — агент говорит «готово», Istok хранит доказательства",
       description:
-        "Задачи, ход работы и доказательства хранятся вместе с проектом, а не в сессии агента, и продолжаются на любой вашей машине.",
+        "Istok сам запускает проверки кодинг-агента и хранит их в задаче вместе с проектом, а не в сессии агента. Любой агент, любая ваша машина.",
     },
     nav: {
       docs: "Документация",
