@@ -55,6 +55,8 @@ An agent saying "done, tests pass" is a claim. Istok lets the agent attach proof
 
 A task is completed with a reference to a passed check of its run, so "done" points at evidence. When no check applies, for example a documentation-only change, the agent must say so and give a reason, and the reason is stored. A failed check throws nothing away: the agent fixes the problem and checks again, and the failure stays visible in the history.
 
+A validation is tied to the code it checked. After the command finishes, Istok fingerprints the project's working tree in Git: the commit and every change on top of it, including untracked files that `.gitignore` does not exclude. When the task is completed, Istok compares the tree again. If the code changed after the check passed, completion is refused until the agent runs the check again, so a passed check always describes the code that was delivered. Committing the checked changes does not count as a change. In a project without Git nothing ties the check to the code, and the check is marked as not tied to code.
+
 Command output is bounded (up to 1 MiB per stream), commands get an allowlisted environment, and commands Istok classifies as dangerous need an explicit override with a reason.
 
 ## Context and knowledge
