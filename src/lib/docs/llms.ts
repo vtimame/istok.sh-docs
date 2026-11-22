@@ -8,7 +8,7 @@ export const intro = `# Istok
 
 > Istok is a local CLI and MCP server that keeps coding-agent work with your project instead of inside a conversation: tasks, runs, validations, context and knowledge live in a local SQLite database, so work survives across sessions, between agents and, through a self-hosted sync hub, between devices.
 
-Install with \`curl -fsSL https://get.istok.sh | sh\`, run \`istok init\` in a repository, connect an agent to \`istok mcp\` and open \`istok ui\` to watch the work.`;
+Install with \`curl -fsSL https://get.istok.sh | sh\` or \`brew install vtimame/tap/istok\` (in Claude Code: \`/plugin install istok --marketplace vtimame/istok.sh\`), run \`istok init\` in a repository, connect an agent to \`istok mcp\` and open \`istok ui\` to watch the work.`;
 
 // English pages in sidebar order; llms.txt is for agents, so one language is enough.
 export async function englishDocs() {
